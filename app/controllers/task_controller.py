@@ -125,11 +125,18 @@ def detail(task_id: str):
 @login_required
 def edit(task_id: str):
     task = _get_task_or_404(task_id)
-    form = TaskForm(obj=task)
+    priority_val = task.priority.value if hasattr(task.priority, "value") else str(task.priority)
+    status_val = task.status.value if hasattr(task.status, "value") else str(task.status)
+    form = TaskForm(
+        title=task.title,
+        description=task.description,
+        assignee=task.assignee,
+        project_id=str(task.project_id) if task.project_id else "",
+        priority=priority_val,
+        status=status_val,
+        deadline=task.deadline,
+    )
     form.project_id.choices = project_choices()
-    form.priority.data = task.priority
-    form.status.data = task.status
-    form.project_id.data = str(task.project_id) if task.project_id else ""
 
     if form.validate_on_submit():
         try:
