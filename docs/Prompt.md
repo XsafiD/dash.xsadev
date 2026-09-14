@@ -138,3 +138,11 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Rencana:
 aku ingin update ui halaman login seperti yang ada di referensi @temp-reference/login_dashboard.html coba kamu analisis dan bagaiimana pendapatmu tentang hal ini, halaman login referensi (baru) vs halaman login yang sekarang, mari kita diskusikan
+
+# 2026-09-14 - Update Bug Editt Detail Task
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengembangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENT.md dan desain style ada di @DESIGN.md
+
+Diskusi:
+Saat aku melakukan update detail task yang berupa dorpdown atau opsi seperti Project, Prioritas, dan Status, tulisannya "Tugas 'NAMA TUGAS' berhasil diperbarui." tapi buktinya status tidak terupdate coba kamu analisis dimana letak error dan bagaimana solusinya, mari kita diskusikan dulu
