@@ -154,3 +154,7 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Rencana:
 Rencanaku mengubah tampilan di detail project, tampilan section (Tugas dan Arsip) dibuat filter saja dengan box button Tugas dan box button Arsip, jadi ketika memilih arsip akan menampilkan tabel tugas arsip, dan jika memilih tugas akan menampilkan tabel tugas todo, tapi masalahnya nanti si tombol tambah tugas yang bingung, kamu bisa analisis UI sekarang dan bantu aku mengkonsep ui baru, kita diskusi dulu, kira kira gimana rekomendasi kamu
+
+---
+
+perubahan terbaru adalah "mengubah tampilan di detail project, tampilan section (Tugas dan Arsip) dibuat filter saja dengan box button Tugas dan box button Arsip, jadi ketika memilih arsip akan menampilkan tabel tugas arsip" perubahan ini sudah diterapkan dan dicoba, namun ketika button arsip di klik atau button tugas di klik, website kek refresh gitu karena perubahan view, bisa ngga kalo dibuat ngga refresh jadi ketika di klik ya langsung smooth ganti ngga refresh, kira kira gimana menurutmu mari kita diskusikan
