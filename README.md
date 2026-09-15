@@ -63,6 +63,25 @@ flask run
 make mysql-up && make migrate-up && make dev
 ```
 
+### Reset Database (Local Development)
+
+```bash
+# 1. Stop MySQL dan hapus volume (reset total)
+docker compose down -v
+
+# 2. Jalankan MySQL fresh
+docker compose up -d mysql
+
+# 3. Jalankan migrasi (BUKAN otomatis di dev mode)
+make migrate-up
+
+# 4. Buka browser → redirect otomatis ke /auth/setup untuk buat akun pertama
+```
+
+**Kenapa perlu `make migrate-up` manual?**
+
+Di dev mode, Flask jalan lokal (bukan Docker) — tidak ada auto-migration. Guard setup mengecek tabel `users`, jika tabel belum ada akan lempar `OperationalError` dan request gagal (bukan redirect ke setup). Jadi setelah reset volume, **wajib** jalankan `make migrate-up` dulu.
+
 ## 📁 Project Structure
 
 ```
