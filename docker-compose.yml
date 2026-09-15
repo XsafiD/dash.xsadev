@@ -10,7 +10,7 @@ services:
       - MYSQL_USER=dashboardku
       - MYSQL_PASSWORD=secret
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./.mysql_data:/var/lib/mysql
     ports:
       - "3307:3306"
     healthcheck:
@@ -28,6 +28,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-volumes:
-  mysql_data:

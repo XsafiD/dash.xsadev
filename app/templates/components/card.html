@@ -57,7 +57,7 @@
 </div>
 {%- endmacro %}
 
-{% macro empty_state(icon, title, subtitle, cta_url=None, cta_label=None) -%}
+{% macro empty_state(icon, title, subtitle, cta_url=None, cta_label=None, data_action=None, data_tab=None) -%}
 <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-hairline bg-surface px-6 py-12 text-center">
   <span class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-soft text-steel">
     <i class="fa-solid {{ icon }} text-xl" aria-hidden="true"></i>
@@ -65,7 +65,10 @@
   <h3 class="mt-4 text-[16px] font-medium text-ink-deep">{{ title }}</h3>
   <p class="mt-1 max-w-sm text-[14px] text-slate">{{ subtitle }}</p>
   {% if cta_url %}
-  <a href="{{ cta_url }}" class="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[14px] font-medium text-white transition hover:bg-primary-deep">
+  <a href="{{ cta_url }}"
+     {% if data_action %}data-action="{{ data_action }}"{% endif %}
+     {% if data_tab %}data-tab="{{ data_tab }}"{% endif %}
+     class="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[14px] font-medium text-white transition hover:bg-primary-deep">
     <i class="fa-solid fa-plus text-[12px]" aria-hidden="true"></i>{{ cta_label }}
   </a>
   {% endif %}

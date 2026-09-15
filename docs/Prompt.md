@@ -146,3 +146,11 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Diskusi:
 Saat aku melakukan update detail task yang berupa dorpdown atau opsi seperti Project, Prioritas, dan Status, tulisannya "Tugas 'NAMA TUGAS' berhasil diperbarui." tapi buktinya status tidak terupdate coba kamu analisis dimana letak error dan bagaimana solusinya, mari kita diskusikan dulu
+
+# 2026-09-15 - Update UI Detail Project
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengembangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENT.md dan desain style ada di @DESIGN.md
+
+Rencana:
+Rencanaku mengubah tampilan di detail project, tampilan section (Tugas dan Arsip) dibuat filter saja dengan box button Tugas dan box button Arsip, jadi ketika memilih arsip akan menampilkan tabel tugas arsip, dan jika memilih tugas akan menampilkan tabel tugas todo, tapi masalahnya nanti si tombol tambah tugas yang bingung, kamu bisa analisis UI sekarang dan bantu aku mengkonsep ui baru, kita diskusi dulu, kira kira gimana rekomendasi kamu

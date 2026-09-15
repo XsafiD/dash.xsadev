@@ -62,7 +62,10 @@ def detail(project_id: str):
     tasks = task_service.get_all(filters=filters)
     archived_tasks = task_service.get_archived(filters=filters)
     return render_template(
-        "project/detail.html", project=project, tasks=tasks, archived_tasks=archived_tasks
+        "project/detail.html",
+        project=project,
+        tasks=tasks,
+        archived_tasks=archived_tasks,
     )
 
 

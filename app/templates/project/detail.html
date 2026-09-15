@@ -77,45 +77,98 @@
   {% endfor %}
 </section>
 
-{# ── Task list (tabel) ── #}
+{# ── Filter button group + tombol tambah ── #}
 <section class="mt-10" aria-label="Tugas project">
-  <div class="flex items-center justify-between border-b border-hairline-soft pb-4">
-    <h2 class="text-[24px] font-bold text-ink-deep">Tugas</h2>
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-hairline-soft pb-4">
+    <div class="flex items-center gap-2" role="tablist" aria-label="Filter tugas">
+      <button type="button"
+              role="tab"
+              aria-selected="true"
+              data-tab="tasks"
+              class="tab-btn inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium transition bg-primary text-white">
+        Tugas
+        <span class="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[12px]">
+          {{ tasks | length }}
+        </span>
+      </button>
+      <button type="button"
+              role="tab"
+              aria-selected="false"
+              data-tab="archive"
+              class="tab-btn inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium transition bg-surface-soft text-slate hover:bg-hairline">
+        Arsip
+        <span class="inline-flex items-center rounded-full bg-hairline text-slate px-2 py-0.5 text-[12px]">
+          {{ archived_tasks | length }}
+        </span>
+      </button>
+    </div>
     <a href="{{ url_for('task.create', project_id=project.public_id) }}"
        class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[14px] font-medium text-white transition hover:bg-primary-deep">
       <i class="fa-solid fa-plus text-[12px]" aria-hidden="true"></i>Tambah Tugas
     </a>
   </div>
-  {% if tasks %}
-  <div class="mt-5">
-    {{ task_table(tasks, next_url=url_for('project.detail', project_id=project.public_id)) }}
-  </div>
-  {% else %}
-  <div class="mt-5">
-    {{ empty_state("fa-list-check", "Belum ada tugas", "Project ini belum memiliki tugas.", url_for('task.create', project_id=project.public_id), "Tambah Tugas") }}
-  </div>
-  {% endif %}
-</section>
 
-{# ── Arsip (collapsed by default — referensi, bukan kerja aktif) ── #}
-<details class="group mt-10" aria-label="Arsip tugas project">
-  <summary class="flex cursor-pointer select-none items-center justify-between border-b border-hairline-soft pb-4 [&::-webkit-details-marker]:hidden">
-    <h2 class="flex items-center gap-3 text-[24px] font-bold text-ink-deep">
-      Arsip
-      <span class="inline-flex items-center rounded-full bg-surface-soft px-2.5 py-1 text-[12px] font-medium text-slate">
-        {{ archived_tasks | length }}
-      </span>
-    </h2>
-    <i class="fa-solid fa-chevron-down text-[14px] text-steel transition-transform duration-150 group-open:rotate-180" aria-hidden="true"></i>
-  </summary>
-  <div class="mt-5">
-    {% if archived_tasks %}
-    {{ archived_task_table(archived_tasks, back_url=url_for('project.detail', project_id=project.public_id)) }}
+  {# ── Tabel Tugas Aktif ── #}
+  <div id="panel-tasks" class="mt-5" role="tabpanel">
+    {% if tasks %}
+      {{ task_table(tasks, next_url=url_for('project.detail', project_id=project.public_id)) }}
     {% else %}
-    {{ empty_state("fa-box-archive", "Belum ada arsip", "Tugas selesai dapat diarsipkan dari tabel di atas — arsip tetap tampil di halaman ini.") }}
+      {{ empty_state("fa-list-check", "Belum ada tugas", "Project ini belum memiliki tugas.", url_for('task.create', project_id=project.public_id), "Tambah Tugas") }}
     {% endif %}
   </div>
-</details>
+
+  {# ── Tabel Arsip ── #}
+  <div id="panel-archive" class="mt-5 hidden" role="tabpanel">
+    {% if archived_tasks %}
+      {{ archived_task_table(archived_tasks, back_url=url_for('project.detail', project_id=project.public_id)) }}
+    {% else %}
+      {{ empty_state("fa-box-archive", "Belum ada arsip", "Tugas selesai dapat diarsipkan dari tab Tugas.", "#", "Lihat Tugas", data_action="switch-tab", data_tab="tasks") }}
+    {% endif %}
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panelTasks = document.getElementById('panel-tasks');
+  const panelArchive = document.getElementById('panel-archive');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const targetTab = this.dataset.tab;
+
+      tabBtns.forEach(b => {
+        const isActive = b.dataset.tab === targetTab;
+        b.setAttribute('aria-selected', isActive);
+        b.classList.toggle('bg-primary', isActive);
+        b.classList.toggle('text-white', isActive);
+        b.classList.toggle('bg-surface-soft', !isActive);
+        b.classList.toggle('text-slate', !isActive);
+
+        const badge = b.querySelector('span');
+        if (badge) {
+          badge.classList.toggle('bg-white/20', isActive);
+          badge.classList.toggle('text-white', isActive);
+          badge.classList.toggle('bg-hairline', !isActive);
+          badge.classList.toggle('text-slate', !isActive);
+        }
+      });
+
+      panelTasks.classList.toggle('hidden', targetTab !== 'tasks');
+      panelArchive.classList.toggle('hidden', targetTab !== 'archive');
+    });
+  });
+
+  document.querySelectorAll('[data-action="switch-tab"]').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetTab = this.dataset.tab;
+      const targetBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+      if (targetBtn) targetBtn.click();
+    });
+  });
+});
+</script>
 
 {{ confirm_modal_dynamic(
   "modal-delete-archived-task",
