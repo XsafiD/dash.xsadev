@@ -82,6 +82,78 @@ class TestArchiveService:
             task_service.unarchive(999)
 
 
+@pytest.fixture
+def many_archived(app):
+    """12 task terarsip — untuk uji pagination."""
+    for i in range(12):
+        task = task_service.create(title=f"Arsip {i:02d}", status="done")
+        task_service.archive(task.id)
+
+
+class TestArchivePagination:
+    """TC-12d: pagination server-side list arsip (17-performance #4)."""
+
+    def test_paginated_halaman_pertama_sesuai_per_page(self, app, many_archived):
+        pagination = task_service.get_archived_paginated(page=1, per_page=10)
+        assert pagination.total == 12
+        assert pagination.pages == 2
+        assert len(pagination.items) == 10
+
+    def test_paginated_halaman_terakhir_sisa(self, app, many_archived):
+        pagination = task_service.get_archived_paginated(page=2, per_page=10)
+        assert len(pagination.items) == 2
+
+    def test_paginated_filter_project(self, app, sample_project, archived_task):
+        task_service.create(title="Inbox selesai", status="done")
+        inbox_done = task_service.get_all(filters={"status": "done"})[0]
+        task_service.archive(inbox_done.id)
+
+        pagination = task_service.get_archived_paginated(
+            filters={"project_id": sample_project.id}, page=1, per_page=10
+        )
+        assert pagination.total == 1
+        assert [t.id for t in pagination.items] == [archived_task.id]
+
+    def test_get_archived_tetap_list_penuh(self, app, many_archived):
+        """Kontrak lama utuh — dipakai detail project (bukan paginated)."""
+        assert len(task_service.get_archived()) == 12
+
+    def test_route_per_page_membatasi_item(self, client, login_user, many_archived):
+        body = client.get("/arsip/?per_page=10").data.decode()
+        assert body.count("data-task-item") == 10
+        assert ">12</span> arsip" in body
+        assert "page=2" in body
+
+    def test_route_halaman_kedua_sisa_item(self, client, login_user, many_archived):
+        body = client.get("/arsip/?per_page=10&page=2").data.decode()
+        assert body.count("data-task-item") == 2
+
+    def test_route_per_page_tak_dikenal_fallback_default(self, client, login_user, many_archived):
+        body = client.get("/arsip/?per_page=9999").data.decode()
+        assert body.count("data-task-item") == 12
+        assert 'value="25" selected' in body
+
+    def test_route_counter_dan_tanpa_pagination_saat_satu_halaman(
+        self, client, login_user, archived_task
+    ):
+        body = client.get("/arsip/").data.decode()
+        assert "Menampilkan" in body
+        assert ">1</span> arsip" in body
+        assert "Navigasi halaman" not in body
+
+    def test_route_project_filter_dipertahankan_di_link_halaman(self, client, login_user, sample_project):
+        for i in range(12):
+            task = task_service.create(
+                title=f"Proyek {i:02d}", project_id=sample_project.id, status="done"
+            )
+            task_service.archive(task.id)
+        body = client.get(
+            f"/arsip/?project_id={sample_project.id}&per_page=10"
+        ).data.decode()
+        assert f"project_id={sample_project.id}" in body
+        assert "per_page=10" in body
+
+
 class TestArchiveInvariant:
     """TC-12b: invariant — task terarsip selalu done; meninggalkan done = keluar arsip."""
 

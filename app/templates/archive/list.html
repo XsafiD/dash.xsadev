@@ -3,6 +3,7 @@
 {% from "components/card.html" import empty_state %}
 {% from "components/modal.html" import confirm_modal_dynamic %}
 {% from "components/page_path.html" import page_path %}
+{% from "components/pagination.html" import pagination_nav %}
 
 {% block title %}Arsip · dash.xsadev{% endblock %}
 
@@ -11,7 +12,12 @@
 {% block authenticated_content %}
 {{ page_path([{"label": "Arsip"}]) }}
 
-{%- set back_url = url_for('archive.index', project_id=filters.get('project_id')) -%}
+{%- set back_url = url_for('archive.index', project_id=filters.get('project_id'), per_page=per_page) -%}
+
+{#- Query args yang dipertahankan saat pindah halaman (tanpa `page`) -#}
+{%- set qs = {} -%}
+{%- if filters.get('project_id') -%}{%- set _ = qs.update({'project_id': filters.get('project_id')}) -%}{%- endif -%}
+{%- set _ = qs.update({'per_page': per_page}) -%}
 
 <div class="flex flex-wrap items-center justify-between gap-3">
   <p class="text-[14px] text-charcoal">Riwayat tugas selesai yang telah diarsipkan.</p>
@@ -21,14 +27,26 @@
   </a>
 </div>
 
-{# ── Filter bar ── #}
-<form method="get" class="mt-6 flex flex-wrap items-center gap-3" aria-label="Filter arsip">
+{# ── Filter bar + jumlah per halaman ── #}
+<form method="get" data-skeleton class="mt-6 flex flex-wrap items-center gap-3" aria-label="Filter arsip">
   <div class="relative">
-    <select name="project_id" aria-label="Filter project"
+    <select name="project_id" data-autosubmit aria-label="Filter project"
             class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
       <option value="">Semua Project</option>
       {% for project in projects_all %}
       <option value="{{ project.id }}" {% if filters.get('project_id') == project.id %}selected{% endif %}>{{ project.name }}</option>
+      {% endfor %}
+    </select>
+    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
+      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
+    </span>
+  </div>
+
+  <div class="relative">
+    <select name="per_page" data-autosubmit aria-label="Jumlah item per halaman"
+            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
+      {% for option in per_page_options %}
+      <option value="{{ option }}" {% if per_page == option %}selected{% endif %}>{{ option }} / halaman</option>
       {% endfor %}
     </select>
     <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
@@ -44,10 +62,11 @@
 </form>
 
 {# ── Arsip list ── #}
-{% if tasks %}
-<section class="mt-6 space-y-4" aria-label="Daftar tugas terarsip">
-  {% for task in tasks %}
-  <div class="flex items-center gap-3 rounded-lg border border-hairline bg-surface p-4 min-h-[56px] transition-shadow duration-150 hover:shadow-sm">
+{% if pagination.items %}
+<section class="mt-6 space-y-4" aria-label="Daftar tugas terarsip" data-skeleton-container>
+  {% for task in pagination.items %}
+  <div data-task-item data-task-id="{{ task.id }}"
+       class="flex items-center gap-3 rounded-lg border border-hairline bg-surface p-4 min-h-[56px] transition-shadow duration-150 hover:shadow-sm">
     <span class="shrink-0 text-[22px] leading-none text-success/70" aria-hidden="true">
       <i class="fa-solid fa-circle-check"></i>
     </span>
@@ -91,8 +110,10 @@
   </div>
   {% endfor %}
 </section>
+
+{{ pagination_nav(pagination, 'archive.index', qs, label="arsip") }}
 {% else %}
-<section class="mt-6">
+<section class="mt-6" data-skeleton-container>
   {% if filters %}
   {{ empty_state("fa-box-archive", "Tidak ada arsip", "Tidak ada tugas terarsip yang cocok dengan filter.") }}
   {% else %}
@@ -100,6 +121,18 @@
   {% endif %}
 </section>
 {% endif %}
+
+{# ── Skeleton row — dikloning form.js saat filter dikirim ── #}
+<template data-skeleton-template>
+  <div class="flex items-center gap-3 rounded-lg border border-hairline bg-surface p-4 min-h-[56px]" aria-hidden="true">
+    <span class="skeleton h-6 w-6 shrink-0 rounded-full"></span>
+    <div class="min-w-0 flex-1 space-y-2">
+      <span class="skeleton block h-4 w-2/5"></span>
+      <span class="skeleton block h-3 w-1/4"></span>
+    </div>
+    <span class="skeleton hidden h-5 w-24 shrink-0 rounded-full sm:block"></span>
+  </div>
+</template>
 
 {# ── Modal konfirmasi hapus — SATU modal untuk semua item, isi via modal.js ── #}
 {{ confirm_modal_dynamic(

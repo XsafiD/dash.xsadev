@@ -182,6 +182,39 @@ class TaskService:
         query = query.order_by(Task.archived_at.desc(), Task.id.desc())
         return [_to_view(t, now) for t in query.all()]
 
+    def get_archived_paginated(
+        self, filters: dict | None = None, page: int = 1, per_page: int = 25
+    ):
+        """Task TERARSIP dengan pagination server-side (17-performance #4).
+
+        Varian paginasi dari :meth:`get_archived` — mengembalikan objek
+        ``Pagination`` (Flask-SQLAlchemy) dengan ``items`` berisi ``TaskView``,
+        agar list arsip yang tumbuh tak dimuat sekaligus. ``get_archived``
+        tetap utuh untuk konsumen yang butuh list penuh (mis. detail project).
+
+        Args:
+            filters: Filter opsional, saat ini ``project_id``.
+            page: Nomor halaman (1-based).
+            per_page: Jumlah item per halaman (cap di controller).
+
+        Returns:
+            ``Pagination`` — atribut ``items`` sudah dikonversi ke ``TaskView``.
+        """
+        now = datetime.now()
+        query = Task.query.options(joinedload(Task.project)).filter(
+            Task.archived_at.is_not(None)
+        )
+        filters = filters or {}
+
+        project_id = filters.get("project_id")
+        if project_id is not None:
+            query = query.filter(Task.project_id == project_id)
+
+        query = query.order_by(Task.archived_at.desc(), Task.id.desc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        pagination.items = [_to_view(t, now) for t in pagination.items]
+        return pagination
+
     def get_by_id(self, task_id: int) -> TaskView | None:
         task = (
             Task.query.options(joinedload(Task.project))
