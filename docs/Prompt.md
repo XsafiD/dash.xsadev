@@ -158,3 +158,11 @@ Rencanaku mengubah tampilan di detail project, tampilan section (Tugas dan Arsip
 ---
 
 perubahan terbaru adalah "mengubah tampilan di detail project, tampilan section (Tugas dan Arsip) dibuat filter saja dengan box button Tugas dan box button Arsip, jadi ketika memilih arsip akan menampilkan tabel tugas arsip" perubahan ini sudah diterapkan dan dicoba, namun ketika button arsip di klik atau button tugas di klik, website kek refresh gitu karena perubahan view, bisa ngga kalo dibuat ngga refresh jadi ketika di klik ya langsung smooth ganti ngga refresh, kira kira gimana menurutmu mari kita diskusikan
+
+# 2026-09-20 - Opsitmasi Arsip Tugas
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengembangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENT.md dan desain style ada di @DESIGN.md
+
+Rencana:
+Update bagian arsip dibuat pagination agar tidak load dan menampilkan banyak item sekaligus. optimasi load item jadi nanti ada dropdown opsi tampilkan berapa item, gimana menurutmu?
