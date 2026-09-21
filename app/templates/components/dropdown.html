@@ -1,0 +1,136 @@
+{# components/dropdown.html — dropdown/combobox bertoken + fallback <select> native
+   Kontrak data-* mengikuti xsadev-kit (ui-kit/core/patterns/dropdown.md).
+   JS initCombobox (static/js/combobox.js) menyembunyikan select lalu menampilkan
+   kontrol kustom. Tanpa JS, select native tetap terkirim & dapat diakses.
+   Class dasar kontrol di-import dari form.html (satu sumber — lihat AGENTS.md). #}
+{% from "components/form.html" import field_class, filter_class %}
+
+{% macro _errors(field) -%}
+  {% for error in field.errors %}
+  <p class="mt-1.5 text-[12px] text-critical">
+    <i class="fa-solid fa-circle-exclamation mr-1" aria-hidden="true"></i>{{ error }}
+  </p>
+  {% endfor %}
+{%- endmacro %}
+
+{% macro _label(field) -%}
+  <span class="mb-1.5 block text-[16px] font-medium text-charcoal">{{ field.label.text }}</span>
+{%- endmacro %}
+
+{% macro _dropdown(name, field_id, label, options, selected, placeholder, searchable, errors=[], show_label=True, variant="field", autosubmit=False) -%}
+  {% set is_filter = variant == "filter" %}
+  {% set menu_shadow = "shadow-[rgba(0,0,0,0.08)_0px_2px_8px_0px]" %}
+
+  {% if is_filter %}
+    {% set select_cls = filter_class(errors) + ' pl-4 pr-9 appearance-none cursor-pointer' %}
+    {% set input_cls = filter_class(errors) + ' pl-9 pr-9' %}
+    {% set trigger_cls = filter_class(errors) + ' pl-4 pr-9 flex items-center justify-between gap-2 text-left' %}
+    {% set root_cls = "relative inline-block" %}
+    {% set menu_cls = "absolute z-20 mt-1 hidden w-full min-w-max overflow-hidden rounded-lg border border-hairline bg-surface " + menu_shadow %}
+  {% else %}
+    {% set select_cls = field_class(errors) + ' appearance-none cursor-pointer pr-10' %}
+    {% set input_cls = field_class(errors, icon="search") + ' pr-10' %}
+    {% set trigger_cls = field_class(errors) + ' flex items-center justify-between gap-2 pr-10 text-left' %}
+    {% set root_cls = "block" %}
+    {% set menu_cls = "absolute z-20 mt-1 hidden w-full overflow-hidden rounded-lg border border-hairline bg-surface " + menu_shadow %}
+  {% endif %}
+
+  {# Normalisasi opsi: tuple (value, label) atau dict {value, label, kind} #}
+  {% set items = [] %}
+  {% for option in options %}
+    {% if option is mapping %}
+      {% set _ = items.append(option) %}
+    {% else %}
+      {% set _ = items.append({"value": option[0]|string, "label": option[1]}) %}
+    {% endif %}
+  {% endfor %}
+  {% set selected = "" if selected is none else selected|string %}
+  {% set matched = items | selectattr("value", "equalto", selected) | list %}
+  {% set selected_label = matched[0].label if matched else placeholder %}
+
+  <div data-combobox class="{{ root_cls }}">
+    {% if show_label %}
+    <span class="mb-1.5 block text-[16px] font-medium text-charcoal">{{ label }}</span>
+    {% endif %}
+
+    {# Fallback tanpa JS: <select> native. #}
+    <select name="{{ name }}" id="{{ field_id }}" data-combobox-native="true"
+            {% if autosubmit %}data-autosubmit{% endif %} aria-label="{{ label }}"
+            class="{{ select_cls }}">
+      {% for item in items %}
+        <option value="{{ item.value }}" {% if item.value == selected %}selected{% endif %}>{{ item.label }}</option>
+      {% endfor %}
+    </select>
+
+    <div data-combobox-control class="relative hidden">
+      {% if searchable %}
+        <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-steel"
+           aria-hidden="true"></i>
+        <input type="text" id="{{ field_id }}-search" data-combobox-input value="{{ selected_label if selected else '' }}"
+               class="{{ input_cls }}" placeholder="{{ placeholder }}" autocomplete="off"
+               {% if is_filter %}size="{{ [selected_label|length + 2, 10] | max }}"{% endif %}
+               role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox"
+               aria-controls="{{ field_id }}-list">
+        <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-steel"
+           data-combobox-chevron aria-hidden="true"></i>
+      {% else %}
+        <button type="button" data-combobox-trigger aria-label="{{ label }}"
+                class="{{ trigger_cls }}"
+                aria-haspopup="listbox" aria-expanded="false" aria-controls="{{ field_id }}-list">
+          <span data-combobox-label data-placeholder="{{ placeholder }}"
+                class="truncate {{ 'text-steel' if not selected }}">{{ selected_label }}</span>
+          <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-steel"
+             data-combobox-chevron aria-hidden="true"></i>
+        </button>
+      {% endif %}
+
+      <div data-combobox-menu class="{{ menu_cls }}">
+        <ul id="{{ field_id }}-list" data-combobox-list role="listbox" class="max-h-56 overflow-auto py-1">
+          {% for item in items %}
+            <li role="option" data-combobox-option data-value="{{ item.value }}"
+                data-kind="{{ item.kind | default('') }}"
+                class="cursor-pointer px-4 py-2 text-[14px] text-ink transition hover:bg-surface-soft">
+              {{ item.label }}
+            </li>
+          {% endfor %}
+        </ul>
+        <p data-combobox-empty class="hidden px-4 py-2 text-[14px] text-steel">Tidak ditemukan</p>
+      </div>
+    </div>
+
+    {% for error in errors %}
+      <p class="mt-1.5 text-[12px] text-critical">
+        <i class="fa-solid fa-circle-exclamation mr-1" aria-hidden="true"></i>{{ error }}
+      </p>
+    {% endfor %}
+  </div>
+{%- endmacro %}
+
+
+{# ── WTForms ──────────────────────────────────────────────────────────────── #}
+
+{% macro select_field(field, placeholder="Pilih...") -%}
+{{ _dropdown(field.name, field.id, field.label.text, field.choices, field.data, placeholder, false, field.errors) }}
+{%- endmacro %}
+
+{% macro combobox_field(field, placeholder="Cari...") -%}
+{{ _dropdown(field.name, field.id, field.label.text, field.choices, field.data, placeholder, true, field.errors) }}
+{%- endmacro %}
+
+
+{# ── Generic (bukan WTForms) — opsi dinamis / non-form ────────────────────── #}
+
+{% macro dropdown(name, label, options, selected="", placeholder="Pilih...", searchable=False, field_id=None) -%}
+{{ _dropdown(name, field_id or name, label, options, selected, placeholder, searchable, []) }}
+{%- endmacro %}
+
+
+{% macro combobox(name, label, options, selected="", placeholder="Cari...", field_id=None) -%}
+{{ _dropdown(name, field_id or name, label, options, selected, placeholder, true, []) }}
+{%- endmacro %}
+
+
+{# Filter toolbar (tanpa label blok, gaya pill, auto-submit saat berubah). #}
+{% macro filter_dropdown(name, label, options, selected="", placeholder="Pilih...", searchable=False) -%}
+{{ _dropdown(name, name, label, options, selected, placeholder, searchable, [], false, "filter", true) }}
+{%- endmacro %}

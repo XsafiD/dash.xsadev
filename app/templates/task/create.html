@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% from "components/form.html" import cancel_link, datetime_field, select_field, submit_button, text_field, textarea_field %}
+{% from "components/form.html" import cancel_link, datetime_field, submit_button, text_field, textarea_field %}
+{% from "components/dropdown.html" import combobox_field, select_field %}
 {% from "components/page_path.html" import page_path %}
 
 {% block title %}Tugas Baru · dash.xsadev{% endblock %}
@@ -20,7 +21,7 @@
     {{ text_field(form.title, placeholder="mis. Finalisasi laporan bulanan") }}
     {{ textarea_field(form.description, placeholder="Detail tugas (opsional)") }}
     {{ text_field(form.assignee, placeholder="mis. Divisi Ekraf") }}
-    {{ select_field(form.project_id) }}
+    {{ combobox_field(form.project_id, placeholder="Cari project...") }}
     {{ select_field(form.priority) }}
     {{ select_field(form.status) }}
     {{ datetime_field(form.deadline) }}

@@ -118,6 +118,19 @@
   display: none;
 }
 
+/* ── Combobox / dropdown (combobox.js) ── */
+/* Putar chevron saat dropdown terbuka. Translate + rotate digabung dalam SATU
+   `transform` agar rotasi tetap di titik tengah. (Memakai properti `rotate`
+   terpisah salah komposisi dengan `transform: translateY(-50%)` dari Tailwind —
+   pergeseran -50% ikut terputar sehingga chevron tergeser turun.) */
+[data-combobox-chevron] {
+  transition: transform 150ms ease-out;
+}
+
+[data-combobox].is-open [data-combobox-chevron] {
+  transform: translateY(-50%) rotate(180deg);
+}
+
 /* Input datetime-local: samakan lebar minimal */
 input[type="datetime-local"] {
   min-width: 0;

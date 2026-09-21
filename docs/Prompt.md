@@ -166,3 +166,11 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Rencana:
 Update bagian arsip dibuat pagination agar tidak load dan menampilkan banyak item sekaligus. optimasi load item jadi nanti ada dropdown opsi tampilkan berapa item, gimana menurutmu?
+
+# 2026-09-21 - Opsitmasi Dropdown
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengembangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENT.md dan desain style ada di @DESIGN.md
+
+Rencana:
+Saat edit atau menambahkan task baru, bagian pemilihan project buat agar bisa isi kolom atau menjadi combobox, karena semakin banyak project harus scroll mencari itu sulit, jadi buat bisa search untuk mencari project yang ingin dijadikan parent, dan styling semua dropdown, biar ngga native kotak dari select-nya. gimana menurutmu?

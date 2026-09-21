@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "components/badge.html" import priority_badge, project_tag %}
 {% from "components/card.html" import empty_state %}
+{% from "components/dropdown.html" import filter_dropdown %}
 {% from "components/modal.html" import confirm_modal_dynamic %}
 {% from "components/page_path.html" import page_path %}
 {% from "components/pagination.html" import pagination_nav %}
@@ -28,31 +29,15 @@
 </div>
 
 {# ── Filter bar + jumlah per halaman ── #}
+{% set project_options = [("", "Semua Project")] %}
+{% for project in projects_all %}{% set _ = project_options.append((project.id, project.name)) %}{% endfor %}
+{% set per_page_opts = [] %}
+{% for option in per_page_options %}{% set _ = per_page_opts.append((option, option ~ ' / halaman')) %}{% endfor %}
 <form method="get" data-skeleton class="mt-6 flex flex-wrap items-center gap-3" aria-label="Filter arsip">
-  <div class="relative">
-    <select name="project_id" data-autosubmit aria-label="Filter project"
-            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
-      <option value="">Semua Project</option>
-      {% for project in projects_all %}
-      <option value="{{ project.id }}" {% if filters.get('project_id') == project.id %}selected{% endif %}>{{ project.name }}</option>
-      {% endfor %}
-    </select>
-    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
-      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
-    </span>
-  </div>
-
-  <div class="relative">
-    <select name="per_page" data-autosubmit aria-label="Jumlah item per halaman"
-            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
-      {% for option in per_page_options %}
-      <option value="{{ option }}" {% if per_page == option %}selected{% endif %}>{{ option }} / halaman</option>
-      {% endfor %}
-    </select>
-    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
-      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
-    </span>
-  </div>
+  {{ filter_dropdown("project_id", "Filter project", project_options,
+                     selected=filters.get('project_id', ''), placeholder="Semua Project", searchable=True) }}
+  {{ filter_dropdown("per_page", "Jumlah item per halaman", per_page_opts,
+                     selected=per_page, placeholder="Per halaman") }}
 
   {% if filters %}
   <a href="{{ url_for('archive.index') }}" class="text-[14px] font-medium text-charcoal transition hover:text-critical">

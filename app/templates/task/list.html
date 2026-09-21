@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "components/card.html" import empty_state, task_item %}
+{% from "components/dropdown.html" import filter_dropdown %}
 {% from "components/page_path.html" import page_path %}
 
 {% block title %}Tugas · dash.xsadev{% endblock %}
@@ -17,45 +18,15 @@
   </a>
 </div>
 {# ── Filter bar ── #}
+{% set project_options = [("", "Semua Project")] %}
+{% for project in projects_all %}{% set _ = project_options.append((project.id, project.name)) %}{% endfor %}
 <form method="get" data-skeleton class="mt-6 flex flex-wrap items-center gap-3" aria-label="Filter tugas">
-  <div class="relative">
-    <select name="project_id" data-autosubmit aria-label="Filter project"
-            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
-      <option value="">Semua Project</option>
-      {% for project in projects_all %}
-      <option value="{{ project.id }}" {% if filters.get('project_id') == project.id %}selected{% endif %}>{{ project.name }}</option>
-      {% endfor %}
-    </select>
-    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
-      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
-    </span>
-  </div>
-
-  <div class="relative">
-    <select name="status" data-autosubmit aria-label="Filter status"
-            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
-      <option value="">Semua Status</option>
-      {% for value, label in status_choices %}
-      <option value="{{ value }}" {% if filters.get('status') == value %}selected{% endif %}>{{ label }}</option>
-      {% endfor %}
-    </select>
-    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
-      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
-    </span>
-  </div>
-
-  <div class="relative">
-    <select name="priority" data-autosubmit aria-label="Filter prioritas"
-            class="appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-9 text-[14px] text-charcoal focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10">
-      <option value="">Semua Prioritas</option>
-      {% for value, label in priority_choices %}
-      <option value="{{ value }}" {% if filters.get('priority') == value %}selected{% endif %}>{{ label }}</option>
-      {% endfor %}
-    </select>
-    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-steel">
-      <i class="fa-solid fa-chevron-down text-[12px]" aria-hidden="true"></i>
-    </span>
-  </div>
+  {{ filter_dropdown("project_id", "Filter project", project_options,
+                     selected=filters.get('project_id', ''), placeholder="Semua Project", searchable=True) }}
+  {{ filter_dropdown("status", "Filter status", [("", "Semua Status")] + status_choices,
+                     selected=filters.get('status', ''), placeholder="Semua Status") }}
+  {{ filter_dropdown("priority", "Filter prioritas", [("", "Semua Prioritas")] + priority_choices,
+                     selected=filters.get('priority', ''), placeholder="Semua Prioritas") }}
 
   {% if filters %}
   <a href="{{ url_for('task.index') }}" class="text-[14px] font-medium text-charcoal transition hover:text-critical">
