@@ -28,7 +28,7 @@ Standards repo ini: `docs/coding-standards/` (git submodule).
 
 ## UI Kit (WAJIB)
 
-UI kit: `docs/xsadev-kit/` (git submodule → `XsafiD/xsadev-kit`, pin `v1.1.0`).
+UI kit: `docs/xsadev-kit/` (git submodule → `XsafiD/xsadev-kit`, pin `v1.2.1`).
 Snippet lengkap: `docs/xsadev-kit/AGENTS-snippet.md`.
 
 **Aturan konsumsi:**
