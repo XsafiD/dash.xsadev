@@ -25,3 +25,36 @@ Standards repo ini: `docs/coding-standards/` (git submodule).
 | TransactionLine | Reminder (disabled — fase notifikasi) |
 
 ---
+
+## UI Kit (WAJIB)
+
+UI kit: `docs/xsadev-kit/` (git submodule → `XsafiD/xsadev-kit`, pin `v1.1.0`).
+Snippet lengkap: `docs/xsadev-kit/AGENTS-snippet.md`.
+
+**Aturan konsumsi:**
+
+1. Kontrak token: `docs/xsadev-kit/core/TOKENS.md`
+2. Kontrak markup + `data-*` & API komponen: `docs/xsadev-kit/core/patterns/`
+3. Panduan generik: `docs/xsadev-kit/guides/`
+4. Adapter Flask: `docs/xsadev-kit/adapters/flask/` — aset **disalin** ke `app/templates/` + `app/static/`, jangan import dari submodule saat runtime
+5. Ganti tampilan = ganti `app/static/js/theme.js`, bukan sunting shell/komponen
+6. "Kenapa" visual project: `DESIGN.md`
+
+**WAJIB:**
+
+1. Pakai komponen kit; jangan menulis `<select>` polos / menggambar ulang dropdown per halaman.
+2. Jaga fallback native (`<select>` asli) — form tetap jalan tanpa JS.
+3. **Class dasar kontrol dari SATU sumber.** Definisi class dasar input (padding, rounded, border, focus) ada di `app/templates/components/form.html` (`field_class`) dan **di-import** oleh `components/dropdown.html` — jangan menyalin string class ke komponen lain.
+4. Semua kontrol form seragam tinggi, padding, radius, dan tipografinya (`py-2.5`, `rounded-lg`, `text-[14px]`).
+5. Jangan mengubah token/nama `data-*` ad-hoc; selaraskan lewat kit.
+
+**DILARANG:**
+
+| Anti-pattern | Konsekuensi |
+|---|---|
+| Menyalin string class antar komponen | Drift ukuran (mis. dropdown lebih pendek karena `py-*` tertinggal) |
+| Bikin dropdown/segmented sendiri per halaman | Tampilan beda + JS ganda tak terawat |
+| Menghapus fallback native | Rusak tanpa JS, aksesibilitas turun |
+| Hardcode warna state aktif | Token bocor; ganti tema harus sunting halaman |
+
+---
