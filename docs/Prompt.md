@@ -182,3 +182,11 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Rencana:
 Dari halaman detail tugas, ketika ingin kembali ke project bisa klik di bagian detail tugas yang bagian project untuk mempermudah kembali ke parent project dari tugas
+
+# 2026-09-29 - Update Tombol Salin untuk catatan
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengambangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENTS.md dan desain style ada di @DESIGN.md
+
+Rencana:
+Dibagian catatan, ada fitur copy/cetatan, jadi ada tombol copy di dekat tombol hapus

@@ -133,16 +133,23 @@
             <p class="text-[12px] text-steel">
               <i class="fa-regular fa-clock mr-1" aria-hidden="true"></i>{{ note.created_at | fmt_datetime }}
             </p>
-            <p class="mt-1 whitespace-pre-line break-words text-[14px] leading-relaxed text-ink">{{ note.content }}</p>
+            <p data-note-content class="mt-1 whitespace-pre-line break-words text-[14px] leading-relaxed text-ink">{{ note.content }}</p>
           </div>
-          <button type="button" data-modal-target="modal-delete-note" aria-haspopup="dialog"
-                  aria-label="Hapus catatan: {{ note.content[:40] }}{{ '…' if note.content|length > 40 }}"
-                  data-confirm-action="{{ url_for('task.delete_note', task_id=task.public_id, note_id=note.id) }}"
-                  data-confirm-title="Hapus catatan?"
-                  data-confirm-message="Catatan ini akan dihapus permanen dari timeline."
-                  class="inline-flex shrink-0 items-center gap-2 rounded-full border border-critical px-3 py-1.5 text-[12px] font-medium text-critical transition hover:bg-critical/10 active:scale-[0.98]">
-            <i class="fa-solid fa-trash text-[12px]" aria-hidden="true"></i>Hapus
-          </button>
+          <div class="flex shrink-0 items-center gap-2">
+            <button type="button" data-copy-note
+                    aria-label="Salin catatan: {{ note.content[:40] }}{{ '…' if note.content|length > 40 }}"
+                    class="inline-flex shrink-0 items-center gap-2 rounded-full border border-hairline px-3 py-1.5 text-[12px] font-medium text-slate transition hover:bg-surface-soft hover:text-ink active:scale-[0.98]">
+              <i class="fa-regular fa-copy text-[12px]" aria-hidden="true"></i>Salin
+            </button>
+            <button type="button" data-modal-target="modal-delete-note" aria-haspopup="dialog"
+                    aria-label="Hapus catatan: {{ note.content[:40] }}{{ '…' if note.content|length > 40 }}"
+                    data-confirm-action="{{ url_for('task.delete_note', task_id=task.public_id, note_id=note.id) }}"
+                    data-confirm-title="Hapus catatan?"
+                    data-confirm-message="Catatan ini akan dihapus permanen dari timeline."
+                    class="inline-flex shrink-0 items-center gap-2 rounded-full border border-critical px-3 py-1.5 text-[12px] font-medium text-critical transition hover:bg-critical/10 active:scale-[0.98]">
+              <i class="fa-solid fa-trash text-[12px]" aria-hidden="true"></i>Hapus
+            </button>
+          </div>
         </div>
       </div>
     </li>
