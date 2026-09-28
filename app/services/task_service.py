@@ -28,6 +28,7 @@ class TaskView:
     id: int
     public_id: str
     project_id: int | None
+    project_public_id: str | None
     project_name: str | None
     project_color: str | None
     title: str
@@ -89,6 +90,7 @@ def _to_view(task: Task, now: datetime) -> TaskView:
         id=task.id,
         public_id=task.public_id,
         project_id=task.project_id,
+        project_public_id=task.project.public_id if task.project else None,
         project_name=task.project.name if task.project else None,
         project_color=task.project.color if task.project else None,
         title=task.title,

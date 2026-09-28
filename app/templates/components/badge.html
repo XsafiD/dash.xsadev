@@ -38,12 +38,19 @@
   {%- endif -%}
 {%- endmacro %}
 
-{% macro project_tag(name, color) -%}
+{% macro project_tag(name, color, href=None) -%}
   {%- if name -%}
+    {%- if href -%}
+  <a href="{{ href }}" class="inline-flex items-center gap-1.5 text-[12px] font-medium text-charcoal transition hover:text-primary">
+    <span class="h-2 w-2 rounded-full" style="background-color: {{ color or '#3B82F6' }}"></span>
+    {{ name }}
+  </a>
+    {%- else -%}
   <span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-charcoal">
     <span class="h-2 w-2 rounded-full" style="background-color: {{ color or '#3B82F6' }}"></span>
     {{ name }}
   </span>
+    {%- endif -%}
   {%- endif -%}
 {%- endmacro %}
 

@@ -58,7 +58,7 @@
       <p class="text-[12px] font-medium uppercase tracking-wide text-steel">
         <i class="fa-solid fa-folder-open mr-1.5" aria-hidden="true"></i>Project
       </p>
-      <div class="mt-1.5">{{ project_tag(task.project_name, task.project_color) if task.project_name else '<span class="text-[14px] text-slate">Inbox</span>' | safe }}</div>
+      <div class="mt-1.5">{{ project_tag(task.project_name, task.project_color, url_for('project.detail', project_id=task.project_public_id)) if task.project_name else '<span class="text-[14px] text-slate">Inbox</span>' | safe }}</div>
     </div>
     <div>
       <p class="text-[12px] font-medium uppercase tracking-wide text-steel">
