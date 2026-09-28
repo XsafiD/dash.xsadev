@@ -1,4 +1,4 @@
-# Dashboardku - Concept Specification
+# Dash Xsadev - Concept Specification
 
 ## 🎯 Overview
 
@@ -12,7 +12,7 @@ Aplikasi todo list custom dengan notifikasi berbasis webhook untuk mengatasi ket
 - Butuh kontrol penuh atas sistem notifikasi
 
 ### Solusi
-- Aplikasi todo list sendiri bernama "Dashboardku"
+- Aplikasi todo list sendiri bernama "Dash Xsadev"
 - Notifikasi via webhook (seperti Uptime Kuma)
 - Integrasi dengan WhatsApp Gateway (WAHA)
 - Reminder flexible sesuai kebutuhan workflow
@@ -54,7 +54,7 @@ Aplikasi todo list custom dengan notifikasi berbasis webhook untuk mengatasi ket
 ## 📁 Project Structure
 
 ```
-dashboardku/
+dash-xsadev/
 ├── docker-compose.yml          # MySQL + App service
 ├── Dockerfile                  # App container
 ├── requirements.txt            # Python deps
@@ -94,7 +94,7 @@ dashboardku/
 ## 🔄 Arsitektur High-Level
 
 ```
-Dashboardku (Docker)
+Dash Xsadev (Docker)
 ├── Frontend (UI untuk manage task & project)
 ├── Backend API (CRUD task, project, webhook config)
 ├── Scheduler Service (Cek deadline & trigger notifikasi)
@@ -313,13 +313,13 @@ POST   /api/notifications/test             # Test webhook
 ### docker-compose.yml
 ```yaml
 services:
-  dashboardku:
+  dashxsadev:
     build: .
     ports:
       - "8000:8000"
     environment:
       - DB_HOST=mysql
-      - DB_USER=dashboardku
+      - DB_USER=dashxsadev
       - DB_PASS=secret
       - WAHA_WEBHOOK_URL=https://your-waha-endpoint.com/webhook
     depends_on:
@@ -331,8 +331,8 @@ services:
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=dashboardku
-      - MYSQL_USER=dashboardku
+      - MYSQL_DATABASE=dashxsadev
+      - MYSQL_USER=dashxsadev
       - MYSQL_PASSWORD=secret
     volumes:
       - mysql_data:/var/lib/mysql

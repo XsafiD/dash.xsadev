@@ -1,4 +1,4 @@
-// Dashboardku - Alpine.js Components
+// Dash Xsadev - Alpine.js Components
 document.addEventListener('alpine:init', () => {
 
     // Main App Data

@@ -1,5 +1,5 @@
 # UI Specification
-## Dashboardku - Personal Task Management System
+## Dash Xsadev - Personal Task Management System
 
 **Version:** 1.0
 **Date:** August 18, 2026
@@ -28,7 +28,7 @@
 ## 1. Design System Overview
 
 ### 1.1 Design Philosophy
-Dashboardku follows Meta's commerce design system philosophy:
+Dash Xsadev follows Meta's commerce design system philosophy:
 - **Photography-first**: Large visual elements dominate above-the-fold
 - **Dual-CTA pattern**: Primary black pill + secondary ghost outline
 - **Typography hierarchy**: Optimistic VF with consistent weight steps
@@ -153,7 +153,7 @@ font-family: 'Optimistic VF', 'Montserrat', 'Helvetica', 'Arial', sans-serif;
 **Hero Section:**
 ```html
 <h1 class="text-hero-display font-medium">
-  Welcome to Dashboardku
+  Welcome to Dash Xsadev
 </h1>
 <p class="text-subtitle-md mt-6">
   Your personal task management system
@@ -1402,7 +1402,7 @@ font-family: 'Optimistic VF', 'Montserrat', 'Helvetica', 'Arial', sans-serif;
 │  ┌───────────────────────────────────────────────────┐  │
 │  │  About                                              │  │
 │  │  Version 1.0.0                                     │  │
-│  │  © 2026 Dashboardku                                 │  │
+│  │  © 2026 Dash Xsadev                                 │  │
 │  └───────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```

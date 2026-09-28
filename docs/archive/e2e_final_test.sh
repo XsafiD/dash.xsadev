@@ -59,7 +59,7 @@ CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE/api/notifications/logs?limi
 check "$CODE" "200" "Notification logs"
 
 # 13. Frontend loads
-FRONT=$(curl -s $BASE/ | grep -c "Dashboardku")
+FRONT=$(curl -s $BASE/ | grep -c "Dash Xsadev")
 [ "$FRONT" -gt 0 ] && { echo "✅ Frontend index.html tersaji"; PASS=$((PASS+1)); } || { echo "❌ Frontend"; FAIL=$((FAIL+1)); }
 
 # 14. Swagger docs

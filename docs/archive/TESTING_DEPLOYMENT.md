@@ -1,4 +1,4 @@
-# Dashboardku - Testing Guide & Deployment Manual
+# Dash Xsadev - Testing Guide & Deployment Manual
 
 ## 📋 Table of Contents
 1. [Development Testing](#development-testing)
@@ -14,7 +14,7 @@
 ### Quick Test Commands
 
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku
+cd /home/xsafi0/Documents/Working/dash-xsadev
 
 # Start MySQL only (for local development)
 docker compose up -d mysql
@@ -154,7 +154,7 @@ curl -s "http://localhost:8000/api/notifications/logs?limit=10" -H "Authorizatio
 
 # Send test notification
 echo -e "\n4. Send Test Notification:"
-curl -s "http://localhost:8000/api/webhook/test?test_message=Hello+Dashboardku!" -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
+curl -s "http://localhost:8000/api/webhook/test?test_message=Hello+Dash+Xsadev!" -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
 ### Python Test Suite
@@ -240,7 +240,7 @@ chmod +x /tmp/test_full_flow.sh
 
 #### Step 1: Prepare Environment
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku
+cd /home/xsafi0/Documents/Working/dash-xsadev
 
 # Generate strong SECRET_KEY
 openssl rand -hex 32 > secret_key.txt
@@ -254,8 +254,8 @@ python3 -c "import bcrypt; print(bcrypt.hashpw('your_strong_password'.encode(), 
 cat > .env.production << 'EOF'
 DB_HOST=mysql
 DB_PORT=3306
-DB_NAME=dashboardku_prod
-DB_USER=dashboardku_user
+DB_NAME=dashxsadev_prod
+DB_USER=dashxsadev_user
 DB_PASS=<strong_random_password_here>
 
 APP_USERNAME=admin
@@ -283,12 +283,12 @@ docker compose -f docker-compose.yml up -d
 
 # Verify deployment
 docker compose ps
-docker compose logs -f dashboardku
+docker compose logs -f dashxsadev
 ```
 
 #### Step 5: Run Migrations
 ```bash
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 ```
 
 #### Step 6: Verify Health
@@ -309,7 +309,7 @@ sudo apt-get install -y python3.11 python3.11-venv default-libmysqlclient-dev ng
 
 #### Setup Process
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku
+cd /home/xsafi0/Documents/Working/dash-xsadev
 
 # Create virtual environment
 python3.11 -m venv .venv
@@ -345,21 +345,21 @@ server {
 
     # Static files
     location /static {
-        alias /home/user/dashboardku/app/static;
+        alias /home/user/dash-xsadev/app/static;
     }
 }
 ```
 
 #### Supervisor Config
 ```ini
-[program:dashboardku]
-command=/home/user/dashboardku/.venv/bin/gunicorn --bind 0.0.0.0:8000 app.main:app
-directory=/home/user/dashboardku
+[program:dashxsadev]
+command=/home/user/dash-xsadev/.venv/bin/gunicorn --bind 0.0.0.0:8000 app.main:app
+directory=/home/user/dash-xsadev
 user=user
 autostart=true
 autorestart=true
-stderr_logfile=/var/log/dashboardku/error.log
-stdout_logfile=/var/log/dashboardku/out.log
+stderr_logfile=/var/log/dash-xsadev/error.log
+stdout_logfile=/var/log/dash-xsadev/out.log
 ```
 
 ---
@@ -379,7 +379,7 @@ curl -X POST https://httpbin.org/post \
 # Option 2: Using local ngrok tunnel
 ngrok http 8000
 
-# Then configure Dashboardku webhook URL to:
+# Then configure Dash Xsadev webhook URL to:
 # https://abc123.ngrok.io/webhook/sendText/{phone}/{message}
 ```
 
@@ -452,11 +452,11 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) No such table
 **Solution**:
 ```bash
 # Reset database
-docker compose down && docker volume rm dashboardku_mysql_data
+docker compose down && docker volume rm dashxsadev_mysql_data
 docker compose up -d
 
 # Re-run migrations
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 ```
 
 #### Issue 3: Scheduler Not Running
@@ -467,13 +467,13 @@ docker compose exec dashboardku alembic upgrade head
 **Solution**:
 ```bash
 # Check server logs
-docker logs dashboardku | grep -i scheduler
+docker logs dashxsadev | grep -i scheduler
 
 # Look for import errors
-docker logs dashboardku --tail 100
+docker logs dashxsadev --tail 100
 
 # Restart container
-docker compose restart dashboardku
+docker compose restart dashxsadev
 ```
 
 #### Issue 4: Authentication Fails
@@ -499,7 +499,7 @@ python3 -c "import bcrypt; print(bcrypt.hashpw('newpassword'.encode(), bcrypt.ge
 **Solution**:
 ```bash
 # Check static files exist
-ls -la /home/xsafi0/Documents/Working/Dashboardku/app/static/index.html
+ls -la /home/xsafi0/Documents/Working/dash-xsadev/app/static/index.html
 
 # In Docker, verify mount points
 docker compose ps
@@ -527,7 +527,7 @@ Collect all relevant logs:
 tail -f /path/to/uvicorn.log
 
 # Database queries (with echo enabled)
-docker compose exec dashboardku mysql -u dashboardku -psecret dashboardku -e "SHOW PROCESSLIST;"
+docker compose exec dashxsadev mysql -u dashxsadev -psecret dashxsadev -e "SHOW PROCESSLIST;"
 
 # Network requests
 tcpdump -i lo port 8000 -nn | grep HTTP
@@ -593,4 +593,4 @@ Expected results:
 
 **Document Version**: 1.0  
 **Last Updated**: August 18, 2026  
-**Maintained By**: Dashboardku Team
+**Maintained By**: Dash Xsadev Team

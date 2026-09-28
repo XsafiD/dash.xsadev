@@ -37,4 +37,4 @@ def dashboard():
 @main_bp.route("/health")
 def health():
     """Health check — public, tanpa data sensitif."""
-    return {"status": "ok", "service": "dashboardku"}
+    return {"status": "ok", "service": "dashxsadev"}

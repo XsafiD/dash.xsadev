@@ -1,5 +1,5 @@
 # Product Requirements Document (PRD)
-## Dashboardku - Personal Task Management System
+## Dash Xsadev - Personal Task Management System
 
 **Version:** 1.0
 **Date:** August 18, 2026
@@ -11,7 +11,7 @@
 ## 1. Executive Summary
 
 ### 1.1 Product Vision
-Dashboardku is a personal task management system designed to overcome the limitations of existing todo applications like Todoist. The application provides a customizable workflow with webhook-based deadline notifications, similar to Uptime Kuma's notification system, enabling users to receive alerts through any service that supports HTTP webhooks.
+Dash Xsadev is a personal task management system designed to overcome the limitations of existing todo applications like Todoist. The application provides a customizable workflow with webhook-based deadline notifications, similar to Uptime Kuma's notification system, enabling users to receive alerts through any service that supports HTTP webhooks.
 
 ### 1.2 Problem Statement
 Current todo list applications (specifically Todoist) have several limitations:
@@ -242,7 +242,7 @@ A self-hosted, browser-based task management application that:
 
 **First-time user experience:**
 1. **Welcome Screen** (`hero-band-marketing`)
-   - Headline: "Welcome to Dashboardku"
+   - Headline: "Welcome to Dash Xsadev"
    - Subtitle: "Your personal task management system"
    - Dual CTA: "Get Started" (`button-primary`), "View Demo" (`button-secondary`)
 

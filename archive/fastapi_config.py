@@ -5,8 +5,8 @@ class Settings(BaseSettings):
     # Database
     DB_HOST: str = "localhost"
     DB_PORT: int = 3306
-    DB_NAME: str = "dashboardku"
-    DB_USER: str = "dashboardku"
+    DB_NAME: str = "dashxsadev"
+    DB_USER: str = "dashxsadev"
     DB_PASS: str = "secret"
 
     # Auth

@@ -15,7 +15,7 @@ from app.services.scheduler import scheduler_service
 async def lifespan(app: FastAPI):
     """Startup and shutdown handlers with scheduler lifecycle."""
     # Startup
-    print("🚀 Dashboardku starting up...")
+    print("🚀 Dash Xsadev starting up...")
     
     # Initialize scheduler service (runs every minute checking deadlines)
     try:
@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
-    print("🔄 Dashboardku shutting down...")
+    print("🔄 Dash Xsadev shutting down...")
     
     # Gracefully stop scheduler
     try:
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     app = FastAPI(
-        title="Dashboardku API",
+        title="Dash Xsadev API",
         description="Personal task management with webhook notifications",
         version="1.0.0",
         lifespan=lifespan,
@@ -82,7 +82,7 @@ app = create_app()
 @app.get("/health", tags=["system"])
 async def health_check():
     """Health check endpoint."""
-    return {"status": "ok", "service": "dashboardku"}
+    return {"status": "ok", "service": "dashxsadev"}
 
 
 @app.get("/scheduler/status", tags=["system"])

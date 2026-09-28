@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   /* Peta badge status — JAGA SINKRON dengan macro status_badge di components/badge.html */
   var STATUS_BADGES = {

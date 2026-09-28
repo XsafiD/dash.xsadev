@@ -1,4 +1,4 @@
-"""Application factory Dashboardku — Flask."""
+"""Application factory Dash Xsadev — Flask."""
 import os
 from importlib import import_module
 

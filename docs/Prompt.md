@@ -4,7 +4,7 @@ Kondisi:
 Saat ini semua pencatatan tasklist aku tulis di Aplikasi Todoist, karena Todoist memiliki keterbatasan jadi tidak selalu bisa disesuaikan dengan workflow yang aku inginkan.
 
 Rencana:
-Todoist memiliki fitur prem untuk membuka fitur lain, Membuat tidak bisa menggunakan fitur reminder, dan rencana mau aku buat aplikasi todo list sendiri "Dashboardku" dengan notifikasi seperti uptime kuma yang bisa Post atau mengirim webhook, dan fitur tanggal deadline yang dimana bisa notifikasi seperti uptime kuma yaitu webook atau http method, Buatkan aku dokumen SRS dan PRD-nya untuk desain Style sesuaikan dengan @DESIGN.md, gunakan Vanilla HTML dan Tailwind CSS untuk techstack, rencana nanti bisa dijalankan menggunakan `python3 -m http.server 8080` untuk proses development, lalu membuat UI Spec.
+Todoist memiliki fitur prem untuk membuka fitur lain, Membuat tidak bisa menggunakan fitur reminder, dan rencana mau aku buat aplikasi todo list sendiri "Dash Xsadev" dengan notifikasi seperti uptime kuma yang bisa Post atau mengirim webhook, dan fitur tanggal deadline yang dimana bisa notifikasi seperti uptime kuma yaitu webook atau http method, Buatkan aku dokumen SRS dan PRD-nya untuk desain Style sesuaikan dengan @DESIGN.md, gunakan Vanilla HTML dan Tailwind CSS untuk techstack, rencana nanti bisa dijalankan menggunakan `python3 -m http.server 8080` untuk proses development, lalu membuat UI Spec.
 
 ---
 
@@ -14,14 +14,14 @@ Kondisi:
 Saat ini semua pencatatan tasklist aku tulis di Aplikasi Todoist, karena Todoist memiliki keterbatasan jadi tidak selalu bisa disesuaikan dengan workflow yang aku inginkan.
 
 Rencana:
-Todoist memiliki fitur prem untuk membuka fitur lain, Membuat tidak bisa menggunakan fitur reminder, dan rencana mau aku buat aplikasi todo list sendiri "Dashboardku" dengan notifikasi seperti uptime kuma yang bisa Post atau mengirim webhook, dan fitur tanggal deadline yang dimana bisa notifikasi seperti uptime kuma yaitu webhook atau http method, aku ingin kita diskusi terkait konsep, bagaimana konsep aplikasi ini nanti.
+Todoist memiliki fitur prem untuk membuka fitur lain, Membuat tidak bisa menggunakan fitur reminder, dan rencana mau aku buat aplikasi todo list sendiri "Dash Xsadev" dengan notifikasi seperti uptime kuma yang bisa Post atau mengirim webhook, dan fitur tanggal deadline yang dimana bisa notifikasi seperti uptime kuma yaitu webhook atau http method, aku ingin kita diskusi terkait konsep, bagaimana konsep aplikasi ini nanti.
 
 ---
 
 # 2026-08-27 - Prompt Perombakan Techstack
 
 Kondisi:
-Project Dashboardku saat ini sudah mencapai tahap testing pasca deployment, dan saat ini aku menggunakan Vanilla HTML dan Tailwind CSS.
+Project Dash Xsadev saat ini sudah mencapai tahap testing pasca deployment, dan saat ini aku menggunakan Vanilla HTML dan Tailwind CSS.
 
 Masalah:
 aplikasi bisa berjalan hingga ke tampilan UI login dan bahkan berhasil login, namun setelah login tampilan menjadi kacau dan tidak teratur. Sekarang aku ingin merombak semuanya, untuk konsep masih tetap sama, kita akan build perlahan dari awal, pertama jelaskan dulu skema databasenya yang sudah ada dan catat hasil analisis backend tersebut ke docs/

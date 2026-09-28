@@ -81,7 +81,7 @@ async def test_notification(
     # Prepare message
     message = test_message or (
         f"🧪 Test Notification\n"
-        f"From: Dashboardku\n"
+        f"From: Dash Xsadev\n"
         f"Endpoint: {config.endpoint_url}\n"
         f"This is a test notification."
     )

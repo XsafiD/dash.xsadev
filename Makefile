@@ -26,7 +26,7 @@ mysql-ps: ## Show MySQL container status
 	docker compose ps
 
 mysql-shell: ## Enter MySQL shell
-	docker compose exec mysql mysql -u dashboardku -psecret dashboardku
+	docker compose exec mysql mysql -u dashxsadev -psecret dashxsadev
 
 mysql-logs: ## View MySQL logs
 	docker compose logs -f mysql

@@ -1,4 +1,4 @@
-"""Model ORM Dashboardku (Flask-SQLAlchemy).
+"""Model ORM Dash Xsadev (Flask-SQLAlchemy).
 
 Tabel: users (BARU — autentikasi), projects, tasks, task_notes (BARU —
 timeline proses), reminders, webhook_configs, notification_logs. Kolom 5

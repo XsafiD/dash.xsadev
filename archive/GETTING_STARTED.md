@@ -1,4 +1,4 @@
-# 🚀 Getting Started - Dashboardku
+# 🚀 Getting Started - Dash Xsadev
 
 Quick commands untuk mulai development.
 
@@ -9,7 +9,7 @@ Quick commands untuk mulai development.
 docker compose up --build -d
 
 # 2. Run migrations pertama kali
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 
 # 3. Buka browser ke http://localhost:8000/docs
 ```
@@ -98,15 +98,15 @@ docker compose restart mysql
 ### Migration Failed
 ```bash
 # Reset database (⚠️ DELETES ALL DATA)
-docker compose down && docker volume rm dashboardku_mysql_data
+docker compose down && docker volume rm dashxsadev_mysql_data
 docker compose up -d
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 ```
 
 ## ✅ Verification Checklist
 
 - [x] Containers running (`docker compose ps`)
-- [x] Database accessible (`docker compose exec mysql mysql -psecret dashboardku`)
+- [x] Database accessible (`docker compose exec mysql mysql -psecret dashxsadev`)
 - [x] API responding (`curl http://localhost:8000/health`)
 - [x] Migrations applied (`SELECT * FROM projects;` returns empty but no error)
 

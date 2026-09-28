@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   /* Urutan kolom — JAGA SINKRON dengan KANBAN_COLUMNS di task_controller.py */
   var COLUMN_ORDER = ["todo", "in_progress", "done"];

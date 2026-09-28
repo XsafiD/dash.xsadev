@@ -1,4 +1,4 @@
-# Dashboardku 🚀
+# Dash Xsadev 🚀
 
 Personal Task Management System dengan project organization, task tracking, dan dashboard analytics — pengganti Todoist yang bisa dikustomisasi penuh.
 
@@ -85,7 +85,7 @@ Di dev mode, Flask jalan lokal (bukan Docker) — tidak ada auto-migration. Guar
 ## 📁 Project Structure
 
 ```
-dashboardku/
+dash-xsadev/
 ├── app/
 │   ├── __init__.py              # Flask app factory + blueprint register
 │   ├── config.py                # Flask config (env-based)
@@ -272,8 +272,8 @@ gunzip -c backups/db-YYYY-MM-DD.sql.gz | \
 
 Dev (MySQL via docker-compose.yml):
 ```bash
-docker compose exec mysql mysqldump -u root -prootpass dashboardku > backup.sql
-cat backup.sql | docker compose exec -T mysql mysql -u root -prootpass dashboardku
+docker compose exec mysql mysqldump -u root -prootpass dashxsadev > backup.sql
+cat backup.sql | docker compose exec -T mysql mysql -u root -prootpass dashxsadev
 ```
 
 ## 📈 Project Status

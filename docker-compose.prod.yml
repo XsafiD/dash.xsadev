@@ -3,24 +3,32 @@
 # Semua kredensial dari .env.production (env_file) — tidak ada secret di file ini
 # sehingga file ini aman di-commit (18-deployment.md DILARANG: secret di compose).
 # Tanpa ${...} interpolation → tidak perlu --env-file.
+# name: dipatok agar project name tidak ikut berubah saat folder repo dipindah/rename.
+name: dash-xsadev
 services:
   app:
     build: .
-    container_name: dashboardku-app
+    container_name: dashxsadev-app
     env_file: .env.production
     environment:
-      DB_HOST: mysql           # hostname internal docker (override .env.production)
+      DB_HOST: mysql # hostname internal docker (override .env.production)
       DB_PORT: 3306
-      TZ: Asia/Jakarta         # job auto-archive 23:59 WIB, bukan 23:59 UTC
+      TZ: Asia/Jakarta # job auto-archive 23:59 WIB, bukan 23:59 UTC
       SCHEDULER_ENABLED: "true"
     ports:
-      - "0.0.0.0:5000:5000"  # LAN access — HTTP (HTTPS tidak diperlukan)
+      - "0.0.0.0:8001:5000" # LAN access — HTTP (HTTPS tidak diperlukan)
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:5000/health', timeout=3)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request;urllib.request.urlopen('http://localhost:5000/health', timeout=3)",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -29,21 +37,35 @@ services:
       resources:
         limits:
           memory: 512M
+    networks:
+      - dashxsadev-prod-net
 
   mysql:
     image: mysql:8.0
-    container_name: dashboardku-mysql-prod
-    env_file: .env.production   # MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
+    container_name: dashxsadev-mysql-prod
+    env_file: .env.production # MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-      - mysql_prod_data:/var/lib/mysql   # terpisah dari volume dev (mysql_data)
+      - mysql_prod_data:/var/lib/mysql # terpisah dari volume dev (mysql_data)
     restart: unless-stopped
     healthcheck:
       # $$ = escape interpolation compose; diekspansi shell DI DALAM container
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - dashxsadev-prod-net
+
+networks:
+  dashxsadev-prod-net:
+    driver: bridge
 
 volumes:
   mysql_prod_data:
+    external: true
+    name: dash-xsadev_mysql_prod_data

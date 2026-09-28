@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   ns.initAlert = function () {
     document.querySelectorAll("[data-alert]").forEach(function (alert) {

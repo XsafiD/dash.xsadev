@@ -1,4 +1,4 @@
-# Rencana Migrasi FastAPI → Flask — Dashboardku
+# Rencana Migrasi FastAPI → Flask — Dash Xsadev
 
 > Tanggal: 2026-08-27
 > Status: APPROVED — semua pertanyaan §5 sudah dijawab, eksekusi berjalan
@@ -29,11 +29,11 @@
 
 ---
 
-## 1. Mapping Archetype → Domain Dashboardku
+## 1. Mapping Archetype → Domain Dash Xsadev
 
 Mengikuti `_GLOSSARY.md` — diisi saat project dimulai (update juga tabel di `AGENTS.md` saat eksekusi):
 
-| Archetype | Domain Dashboardku | Catatan |
+| Archetype | Domain Dash Xsadev | Catatan |
 |-----------|-------------------|---------|
 | Actor | User (model DB, tabel `users` BARU) | Seed via CLI `flask create-user`; fitur tambah user menyusul |
 | AdminRole | — (tidak ada, single-user) | Tidak perlu role check / `admin_required` |

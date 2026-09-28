@@ -1,4 +1,4 @@
-# Dashboardku - Phase 5: Testing & Deployment Summary
+# Dash Xsadev - Phase 5: Testing & Deployment Summary
 
 ## ✅ Completed Tasks
 
@@ -84,7 +84,7 @@ E2E test suite lengkap dibuat dan dijalankan (`docs/e2e_final_test.sh`) — **14
 ## 📁 Repository Structure (Final)
 
 ```
-dashboardku/
+dash-xsadev/
 ├── .env.example / .env.production / .gitignore
 ├── CONCEPT.md / DESIGN.md / README.md
 ├── PROJECT_TRACKER.md / GETTING_STARTED.md

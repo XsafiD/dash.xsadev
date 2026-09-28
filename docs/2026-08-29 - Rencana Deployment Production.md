@@ -1,4 +1,4 @@
-# Rencana Deployment Production — Dashboardku
+# Rencana Deployment Production — Dash Xsadev
 
 > **Tanggal**: 2026-08-29
 > **Status**: Hasil riset & rekomendasi (pre-implementasi Phase 5)
@@ -14,7 +14,7 @@
 
 ## 1. Ringkasan Eksekutif
 
-Dashboardku akan dideploy ke **home server Ubuntu Server 24.04** yang sudah menjalankan Docker, Tailscale, dan cloudflared (domain di Cloudflare). Rekomendasi: **Docker Compose 2 service** (`app` gunicorn + `mysql`), tanpa container reverse proxy tambahan — HTTPS & akses sudah ditangani Cloudflare (jalur utama) dan Tailscale (jalur cadangan).
+Dash Xsadev akan dideploy ke **home server Ubuntu Server 24.04** yang sudah menjalankan Docker, Tailscale, dan cloudflared (domain di Cloudflare). Rekomendasi: **Docker Compose 2 service** (`app` gunicorn + `mysql`), tanpa container reverse proxy tambahan — HTTPS & akses sudah ditangani Cloudflare (jalur utama) dan Tailscale (jalur cadangan).
 
 Deploy manual via SSH: `git pull` → `up -d --build` → `alembic upgrade head`.
 
@@ -137,7 +137,7 @@ Catatan penting:
 services:
   app:
     build: .
-    container_name: dashboardku-app
+    container_name: dashxsadev-app
     env_file: .env.production
     environment:
       - SCHEDULER_ENABLED=true
@@ -162,7 +162,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: dashboardku-mysql-prod
+    container_name: dashxsadev-mysql-prod
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
@@ -196,8 +196,8 @@ File: `.env.production` di server (gitignored, `chmod 600`). Isi:
 
 ```env
 # Database (DB_HOST dioverride compose ke 'mysql')
-DB_NAME=dashboardku_prod
-DB_USER=dashboardku_user
+DB_NAME=dashxsadev_prod
+DB_USER=dashxsadev_user
 DB_PASS=<password-kuat-random>
 MYSQL_ROOT_PASSWORD=<root-password-kuat-random>
 
@@ -267,7 +267,7 @@ ingress:
 
 Lalu DNS CNAME otomatis: `cloudflared tunnel route dns <tunnel> dashboard.domain-anda.com`.
 
-**Rekomendasi Zero Trust**: pasang **Cloudflare Access** policy di hostname tersebut (mis. require email OTP akunmu). Efeknya: sebelum sampai login Dashboardku, pengunjung harus lewat auth Cloudflare dulu — double auth untuk aplikasi pribadi. Bot/scanner tidak akan pernah menyentuh form login.
+**Rekomendasi Zero Trust**: pasang **Cloudflare Access** policy di hostname tersebut (mis. require email OTP akunmu). Efeknya: sebelum sampai login Dash Xsadev, pengunjung harus lewat auth Cloudflare dulu — double auth untuk aplikasi pribadi. Bot/scanner tidak akan pernah menyentuh form login.
 
 ### 5.7 Tailscale serve (jalur cadangan)
 
@@ -277,7 +277,7 @@ Di server:
 tailscale serve --bg http://localhost:5000
 ```
 
-Hasil: `https://dashboardku.<tailnet>.ts.net` aktif di seluruh tailnet dengan sertifikat otomatis. Tanpa port terbuka, tanpa config tambahan. Cocok saat tunnel Cloudflare down atau ingin akses offline-internet.
+Hasil: `https://dash-xsadev.<tailnet>.ts.net` aktif di seluruh tailnet dengan sertifikat otomatis. Tanpa port terbuka, tanpa config tambahan. Cocok saat tunnel Cloudflare down atau ingin akses offline-internet.
 
 ### 5.8 Backup & restore
 
@@ -298,7 +298,7 @@ ls -1t backups/db-*.sql.gz | tail -n +8 | xargs -r rm --
 Cron root (baca env dari `.env.production`):
 
 ```
-0 4 * * * cd /opt/dashboardku && bash -c 'set -a; source .env.production; set +a; ./scripts/backup_db.sh' >> backups/backup.log 2>&1
+0 4 * * * cd /opt/dash-xsadev && bash -c 'set -a; source .env.production; set +a; ./scripts/backup_db.sh' >> backups/backup.log 2>&1
 ```
 
 Restore:
@@ -318,8 +318,8 @@ gunzip -c backups/db-2026-08-29.sql.gz | \
 
 ```bash
 # 1. Clone ke server (via SSH/Tailscale)
-sudo mkdir -p /opt/dashboardku && sudo chown $USER /opt/dashboardku
-git clone <repo-url> /opt/dashboardku && cd /opt/dashboardku
+sudo mkdir -p /opt/dash-xsadev && sudo chown $USER /opt/dash-xsadev
+git clone <repo-url> /opt/dash-xsadev && cd /opt/dash-xsadev
 
 # 2. Siapkan .env.production (lihat §5.3) + chmod 600
 cp .env.production.example .env.production && $EDITOR .env.production && chmod 600 .env.production
@@ -364,7 +364,7 @@ git add -p && git commit -m "..." && git push
 **Di server (via SSH/Tailscale):**
 
 ```bash
-cd /opt/dashboardku
+cd /opt/dash-xsadev
 
 # 1. Backup dulu (net keselamatan sebelum menyentuh apapun)
 ./scripts/backup_db.sh
@@ -409,7 +409,7 @@ gunzip -c backups/db-<tanggal>.sql.gz | \
 
 | Layer | Lokasi | `git pull` / rebuild berpengaruh? |
 |-------|--------|------------------------------------|
-| Kode + file migration | `/opt/dashboardku` (git) | ✅ Ya — memang itu tujuannya |
+| Kode + file migration | `/opt/dash-xsadev` (git) | ✅ Ya — memang itu tujuannya |
 | Data MySQL | Docker volume `mysql_prod_data` | ❌ Tidak — volume di luar git & di luar container FS |
 | `.env.production`, `backups/` | Folder repo di server (untracked/gitignored) | ❌ Tidak — `git pull` tidak menyentuh file untracked |
 | Data dev lokal | Volume `mysql_data` di mesin lokal | ❌ Terpisah total dari prod |

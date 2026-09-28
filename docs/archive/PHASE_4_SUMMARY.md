@@ -1,4 +1,4 @@
-# Dashboardku - Phase 4: Frontend Summary
+# Dash Xsadev - Phase 4: Frontend Summary
 
 ## ✅ Completed Tasks
 
@@ -331,7 +331,7 @@ Following DESIGN.md precisely:
 
 ### Serve Locally
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku/app/static
+cd /home/xsafi0/Documents/Working/dash-xsadev/app/static
 python3 -m http.server 8080
 # Access at http://localhost:8080
 ```

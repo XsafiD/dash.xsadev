@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   ns.initForm = function () {
     // Loading state: tombol submit disabled + spinner saat form dikirim

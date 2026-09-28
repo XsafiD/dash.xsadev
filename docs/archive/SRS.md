@@ -1,5 +1,5 @@
 # Software Requirements Specification (SRS)
-## Dashboardku - Personal Task Management System
+## Dash Xsadev - Personal Task Management System
 
 **Version:** 1.0
 **Date:** August 18, 2026
@@ -11,10 +11,10 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This document specifies the software requirements for Dashboardku, a browser-based personal task management system with webhook-based deadline notifications. The system is designed to be self-hosted and run locally without external server dependencies.
+This document specifies the software requirements for Dash Xsadev, a browser-based personal task management system with webhook-based deadline notifications. The system is designed to be self-hosted and run locally without external server dependencies.
 
 ### 1.2 Scope
-Dashboardku provides:
+Dash Xsadev provides:
 - Task creation, management, and organization
 - Webhook-based deadline notifications
 - Browser-based UI following Meta's design system
@@ -42,7 +42,7 @@ Dashboardku provides:
 ## 2. Overall Description
 
 ### 2.1 Product Perspective
-Dashboardku is a standalone browser-based application that:
+Dash Xsadev is a standalone browser-based application that:
 - Runs entirely in the client's browser
 - Uses no external APIs or services
 - Stores all data locally in browser localStorage
@@ -369,11 +369,11 @@ Dashboardku is a standalone browser-based application that:
 **FR-5.1: Data Storage**
 - The system SHALL store all data in localStorage
 - The system SHALL use separate keys for:
-  - Tasks: `dashboardku_tasks`
-  - Projects: `dashboardku_projects`
-  - Webhooks: `dashboardku_webhooks`
-  - Settings: `dashboardku_settings`
-  - Notifications: `dashboardku_notifications`
+  - Tasks: `dashxsadev_tasks`
+  - Projects: `dashxsadev_projects`
+  - Webhooks: `dashxsadev_webhooks`
+  - Settings: `dashxsadev_settings`
+  - Notifications: `dashxsadev_notifications`
 - The system SHALL implement data compression if storage exceeds 80% capacity
 - The system SHALL validate data integrity on load
 
@@ -381,11 +381,11 @@ Dashboardku is a standalone browser-based application that:
 - The system SHALL export all data as JSON
 - The system SHALL include all tasks, projects, webhooks, and settings
 - The system SHALL format JSON with proper indentation
-- The system SHALL provide filename with timestamp: `dashboardku_export_YYYY-MM-DD.json`
+- The system SHALL provide filename with timestamp: `dashxsadev_export_YYYY-MM-DD.json`
 - The system SHALL validate JSON before export
 
 **FR-5.3: Data Import**
-- The system SHALL accept JSON files exported from Dashboardku
+- The system SHALL accept JSON files exported from Dash Xsadev
 - The system SHALL validate JSON structure and data types
 - The system SHALL warn users about data overwriting
 - The system SHALL provide import preview
@@ -647,12 +647,12 @@ src/
 ```javascript
 // Storage keys
 const STORAGE_KEYS = {
-  TASKS: 'dashboardku_tasks',
-  PROJECTS: 'dashboardku_projects',
-  WEBHOOKS: 'dashboardku_webhooks',
-  SETTINGS: 'dashboardku_settings',
-  NOTIFICATIONS: 'dashboardku_notifications',
-  VERSION: 'dashboardku_version'
+  TASKS: 'dashxsadev_tasks',
+  PROJECTS: 'dashxsadev_projects',
+  WEBHOOKS: 'dashxsadev_webhooks',
+  SETTINGS: 'dashxsadev_settings',
+  NOTIFICATIONS: 'dashxsadev_notifications',
+  VERSION: 'dashxsadev_version'
 };
 ```
 
@@ -690,7 +690,7 @@ const STORAGE_KEYS = {
 #### 5.4.2 Cross-Tab Communication (Optional)
 ```javascript
 // Broadcast Channel for multi-tab sync
-const channel = new BroadcastChannel('dashboardku_sync');
+const channel = new BroadcastChannel('dashxsadev_sync');
 channel.postMessage({ type: 'TASK_UPDATED', data: task });
 ```
 
@@ -1097,7 +1097,7 @@ console.timeEnd('Task Retrieval (10k tasks)');  // Should be < 500ms
 ```bash
 # Clone repository
 git clone <repository-url>
-cd Dashboardku
+cd dash-xsadev
 
 # Start development server
 python3 -m http.server 8080

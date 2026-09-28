@@ -1,13 +1,15 @@
 # Docker hanya untuk MySQL di fase development (keputusan rencana migrasi #14).
 # Service aplikasi Flask ditambahkan kembali di fase deployment.
+# name: dipatok agar project name tidak ikut berubah saat folder repo dipindah/rename.
+name: dash-xsadev
 services:
   mysql:
     image: mysql:8.0
-    container_name: dashboardku-mysql-dev
+    container_name: dashxsadev-mysql-dev
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=dashboardku
-      - MYSQL_USER=dashboardku
+      - MYSQL_DATABASE=dashxsadev
+      - MYSQL_USER=dashxsadev
       - MYSQL_PASSWORD=secret
     volumes:
       - ./.mysql_data:/var/lib/mysql

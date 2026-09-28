@@ -1,5 +1,5 @@
 # Technical Architecture Documentation
-## Dashboardku - Personal Task Management System
+## Dash Xsadev - Personal Task Management System
 
 **Version:** 1.0
 **Date:** August 18, 2026
@@ -10,7 +10,7 @@
 ## 1. System Architecture Overview
 
 ### 1.1 Architecture Pattern
-Dashboardku follows a **Model-View-Controller (MVC)** architecture adapted for client-side applications:
+Dash Xsadev follows a **Model-View-Controller (MVC)** architecture adapted for client-side applications:
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
@@ -81,7 +81,7 @@ Response ← UI Update ← Component ← Controller ← Service ← Model
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboardku - Personal Task Management</title>
+    <title>Dash Xsadev - Personal Task Management</title>
 
     <!-- Meta Design System Font -->
     <link rel="stylesheet" href="assets/fonts/optimistic-vf.css">
@@ -228,7 +228,7 @@ import { WebhookController } from './controllers/webhookController.js';
 import { StorageService } from './services/storageService.js';
 import { NotificationService } from './services/notificationService.js';
 
-class DashboardkuApp {
+class DashXsadevApp {
     constructor() {
         this.controllers = {
             ui: new UIController(),
@@ -254,12 +254,12 @@ class DashboardkuApp {
         // Start notification service
         this.services.notification.start();
 
-        console.log('Dashboardku initialized');
+        console.log('Dash Xsadev initialized');
     }
 }
 
 // Initialize application
-const app = new DashboardkuApp();
+const app = new DashXsadevApp();
 app.init();
 ```
 
@@ -448,12 +448,12 @@ export class TaskController {
 export class StorageService {
     constructor() {
         this.storageKeys = {
-            TASKS: 'dashboardku_tasks',
-            PROJECTS: 'dashboardku_projects',
-            WEBHOOKS: 'dashboardku_webhooks',
-            SETTINGS: 'dashboardku_settings',
-            NOTIFICATIONS: 'dashboardku_notifications',
-            VERSION: 'dashboardku_version'
+            TASKS: 'dashxsadev_tasks',
+            PROJECTS: 'dashxsadev_projects',
+            WEBHOOKS: 'dashxsadev_webhooks',
+            SETTINGS: 'dashxsadev_settings',
+            NOTIFICATIONS: 'dashxsadev_notifications',
+            VERSION: 'dashxsadev_version'
         };
 
         this.currentVersion = '1.0.0';
@@ -470,7 +470,7 @@ export class StorageService {
     }
 
     async migrateToCurrentVersion() {
-        console.log('Initializing Dashboardku storage');
+        console.log('Initializing Dash Xsadev storage');
         localStorage.setItem(this.storageKeys.VERSION, this.currentVersion);
 
         // Initialize empty data structures
@@ -614,7 +614,7 @@ export class StorageService {
             settings: JSON.parse(localStorage.getItem(this.storageKeys.SETTINGS))
         };
 
-        const backups = JSON.parse(localStorage.getItem('dashboardku_backups') || '[]');
+        const backups = JSON.parse(localStorage.getItem('dashxsadev_backups') || '[]');
         backups.push(backup);
 
         // Keep only last 5 backups
@@ -622,7 +622,7 @@ export class StorageService {
             backups.shift();
         }
 
-        localStorage.setItem('dashboardku_backups', JSON.stringify(backups));
+        localStorage.setItem('dashxsadev_backups', JSON.stringify(backups));
     }
 
     getStorageUsage() {
@@ -922,7 +922,7 @@ export class WebhookService {
         const testPayload = {
             test: true,
             timestamp: new Date().toISOString(),
-            message: 'This is a test notification from Dashboardku'
+            message: 'This is a test notification from Dash Xsadev'
         };
 
         try {
@@ -1463,7 +1463,7 @@ export class TaskListComponent {
 
 ```bash
 # 1. Navigate to project directory
-cd Dashboardku
+cd dash-xsadev
 
 # 2. Create initial file structure
 mkdir -p src/{css,js/{controllers,models,services,utils,components},assets/{fonts,icons}}
@@ -1478,7 +1478,7 @@ open http://localhost:8080
 ### 4.2 File Structure
 
 ```
-Dashboardku/
+dash-xsadev/
 ├── index.html              # Main HTML entry point
 ├── PRD.md                  # Product Requirements Document
 ├── SRS.md                  # Software Requirements Specification
@@ -1683,7 +1683,7 @@ describe('User Task Creation Flow', () => {
 
     test('first-time user creates first task', () => {
         // Welcome screen should be visible
-        cy.get('h1').should('contain', 'Welcome to Dashboardku');
+        cy.get('h1').should('contain', 'Welcome to Dash Xsadev');
 
         // Click "Get Started"
         cy.contains('Get Started').click();
@@ -1697,7 +1697,7 @@ describe('User Task Creation Flow', () => {
 
         // Create task step
         cy.get('#task-title').type('My First Task');
-        cy.get('#task-description').type('This is my first task in Dashboardku');
+        cy.get('#task-description').type('This is my first task in Dash Xsadev');
         cy.contains('Create Task').click();
 
         // Verify task was created
@@ -1864,7 +1864,7 @@ class EncryptionService {
 
     generateKey() {
         // Simple XOR encryption (not for production use)
-        return 'dashboardku-secret-key';
+        return 'dashxsadev-secret-key';
     }
 
     encrypt(text) {
@@ -1969,8 +1969,8 @@ npm start
 ```nginx
 server {
     listen 80;
-    server_name dashboardku.example.com;
-    root /var/www/dashboardku/dist;
+    server_name dash-xsadev.example.com;
+    root /var/www/dash-xsadev/dist;
 
     location / {
         try_files $uri $uri/ /index.html;
@@ -2020,7 +2020,7 @@ export class VersionService {
     }
 
     async migrate() {
-        const storedVersion = localStorage.getItem('dashboardku_version') || '0.0.0';
+        const storedVersion = localStorage.getItem('dashxsadev_version') || '0.0.0';
 
         if (storedVersion === this.currentVersion) {
             return; // Already up to date
@@ -2034,7 +2034,7 @@ export class VersionService {
             }
         }
 
-        localStorage.setItem('dashboardku_version', this.currentVersion);
+        localStorage.setItem('dashxsadev_version', this.currentVersion);
         console.log(`Migrated to ${this.currentVersion}`);
     }
 
@@ -2053,7 +2053,7 @@ export class VersionService {
 
     async migrateFrom090() {
         // Migration logic for version 0.9.0
-        const tasks = JSON.parse(localStorage.getItem('dashboardku_tasks') || '[]');
+        const tasks = JSON.parse(localStorage.getItem('dashxsadev_tasks') || '[]');
 
         // Update task structure
         const migrated = tasks.map(task => ({
@@ -2061,7 +2061,7 @@ export class VersionService {
             webhookTriggers: task.webhookTriggers || []
         }));
 
-        localStorage.setItem('dashboardku_tasks', JSON.stringify(migrated));
+        localStorage.setItem('dashxsadev_tasks', JSON.stringify(migrated));
     }
 
     async migrateFrom100() {
@@ -2120,7 +2120,7 @@ try {
 
 ## 10. Conclusion
 
-This technical architecture provides a comprehensive blueprint for building Dashboardku as a client-side, browser-based task management system. The modular architecture ensures maintainability, while the service layer provides a clean separation of concerns.
+This technical architecture provides a comprehensive blueprint for building Dash Xsadev as a client-side, browser-based task management system. The modular architecture ensures maintainability, while the service layer provides a clean separation of concerns.
 
 ### Key Benefits:
 - **Zero Server Dependencies**: Runs entirely in the browser

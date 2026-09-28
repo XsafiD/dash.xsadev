@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   var ACTIVE_CLASS = "bg-surface-soft";
   var PLACEHOLDER_CLASS = "text-steel";

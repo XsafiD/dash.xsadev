@@ -1,4 +1,4 @@
-# Dashboardku - Project Tracker
+# Dash Xsadev - Project Tracker
 
 **Project Status**: In Progress  
 **Last Updated**: August 18, 2026  
@@ -39,7 +39,7 @@ app/
 
 #### Verification Commands
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku
+cd /home/xsafi0/Documents/Working/dash-xsadev
 make docker-up
 make migrate-up
 make dev
@@ -263,7 +263,7 @@ export APP_PASSWORD_HASH="$2b$12$..."  # Pre-hashed strong password
 docker compose -f docker-compose.prod.yml up -d
 
 # Run migrations
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 ```
 
 ---
@@ -286,13 +286,13 @@ docker compose exec dashboardku alembic upgrade head
 
 ### Development Mode
 ```bash
-cd /home/xsafi0/Documents/Working/Dashboardku
+cd /home/xsafi0/Documents/Working/dash-xsadev
 
 # Start containers
 docker compose up -d
 
 # Run migrations
-docker compose exec dashboardku alembic upgrade head
+docker compose exec dashxsadev alembic upgrade head
 
 # Access application
 curl http://localhost:8000/health
@@ -350,10 +350,10 @@ curl -X POST http://localhost:8000/api/login \
 ### Database Backups
 ```bash
 # Backup MySQL database
-docker compose exec mysql mysqldump -u root -prootpass dashboardku > backup.sql
+docker compose exec mysql mysqldump -u root -prootpass dashxsadev > backup.sql
 
 # Restore from backup
-cat backup.sql | docker compose exec -T mysql mysql -u root -prootpass dashboardku
+cat backup.sql | docker compose exec -T mysql mysql -u root -prootpass dashxsadev
 ```
 
 ### Performance Tips

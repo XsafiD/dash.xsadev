@@ -13,9 +13,9 @@ for attempt in range(30):
         pymysql.connect(
             host=os.environ.get("DB_HOST", "mysql"),
             port=int(os.environ.get("DB_PORT", "3306")),
-            user=os.environ.get("DB_USER", "dashboardku"),
+            user=os.environ.get("DB_USER", "dashxsadev"),
             password=os.environ.get("DB_PASS", ""),
-            database=os.environ.get("DB_NAME", "dashboardku"),
+            database=os.environ.get("DB_NAME", "dashxsadev"),
         )
         sys.exit(0)
     except pymysql.MySQLError:

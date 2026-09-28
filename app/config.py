@@ -25,8 +25,8 @@ class Config:
     # Database — MySQL via Docker (docker compose up -d mysql)
     DB_HOST = os.environ.get("DB_HOST", "localhost")
     DB_PORT = int(os.environ.get("DB_PORT", "3306"))
-    DB_NAME = os.environ.get("DB_NAME", "dashboardku")
-    DB_USER = os.environ.get("DB_USER", "dashboardku")
+    DB_NAME = os.environ.get("DB_NAME", "dashxsadev")
+    DB_USER = os.environ.get("DB_USER", "dashxsadev")
     DB_PASS = os.environ.get("DB_PASS", "secret")
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",

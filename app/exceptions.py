@@ -1,4 +1,4 @@
-"""Custom exception classes untuk aplikasi Dashboardku.
+"""Custom exception classes untuk aplikasi Dash Xsadev.
 
 Custom exceptions memungkinkan handling error yang spesifik
 dan memberikan pesan error yang jelas ke user.

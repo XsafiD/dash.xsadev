@@ -1,5 +1,5 @@
 <!-- 
-Dashboardku - Main Application (Phase 4: Frontend)
+Dash Xsadev - Main Application (Phase 4: Frontend)
 Tech Stack: Vanilla HTML5 + Alpine.js v3 + Tailwind CSS
 Design System: Following DESIGN.md specifications
 -->
@@ -9,7 +9,7 @@ Design System: Following DESIGN.md specifications
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Personal task management with webhook notifications">
-    <title>Dashboardku - Task Management</title>
+    <title>Dash Xsadev - Task Management</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,7 +121,7 @@ Design System: Following DESIGN.md specifications
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
-                <h1 class="text-2xl font-bold text-ink-deep mb-2">Dashboardku</h1>
+                <h1 class="text-2xl font-bold text-ink-deep mb-2">Dash Xsadev</h1>
                 <p class="text-steel">Personal Task Management</p>
             </div>
 
@@ -168,7 +168,7 @@ Design System: Following DESIGN.md specifications
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                             </svg>
                         </div>
-                        <h1 class="text-xl font-semibold text-ink-deep">Dashboardku</h1>
+                        <h1 class="text-xl font-semibold text-ink-deep">Dash Xsadev</h1>
                     </div>
 
                     <div class="hidden md:flex items-center gap-4">
@@ -467,7 +467,7 @@ Design System: Following DESIGN.md specifications
             <!-- Footer -->
             <footer class="border-t border-hairline-soft py-4 mt-8">
                 <div class="container mx-auto px-4 text-center text-sm text-steel">
-                    <p>Dashboardku © 2026 • Personal Task Management</p>
+                    <p>Dash Xsadev © 2026 • Personal Task Management</p>
                 </div>
             </footer>
 
@@ -600,8 +600,8 @@ Design System: Following DESIGN.md specifications
         function app() {
             return {
                 auth: {
-                    token: localStorage.getItem('dashboardku_token') || null,
-                    username: localStorage.getItem('dashboardku_username') || '',
+                    token: localStorage.getItem('dashxsadev_token') || null,
+                    username: localStorage.getItem('dashxsadev_username') || '',
                     password: '',
                     loading: false,
                     error: null
@@ -669,8 +669,8 @@ Design System: Following DESIGN.md specifications
                         const data = await response.json();
                         
                         if (response.ok && data.access_token) {
-                            localStorage.setItem('dashboardku_token', data.access_token);
-                            localStorage.setItem('dashboardku_username', data.username);
+                            localStorage.setItem('dashxsadev_token', data.access_token);
+                            localStorage.setItem('dashxsadev_username', data.username);
                             this.auth.token = data.access_token;
                             this.auth.username = data.username;
                             this.auth.password = '';
@@ -686,8 +686,8 @@ Design System: Following DESIGN.md specifications
                 },
 
                 logout() {
-                    localStorage.removeItem('dashboardku_token');
-                    localStorage.removeItem('dashboardku_username');
+                    localStorage.removeItem('dashxsadev_token');
+                    localStorage.removeItem('dashxsadev_username');
                     this.auth.token = null;
                     this.auth.username = '';
                     location.reload();

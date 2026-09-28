@@ -1,6 +1,6 @@
 ## Overview
 
-Dashboardku reads as a confident personal task management system with clean, data-dense layouts that prioritize actionable information over decorative flourish. The design voice is functionality-first: cards, lists, and controls dominate above-the-fold real estate, with white space and clear visual hierarchy carrying the rest. The system has a recognizable card-based pattern — white project cards with colored accent tags, paired with floating action buttons for quick task creation.
+Dash Xsadev reads as a confident personal task management system with clean, data-dense layouts that prioritize actionable information over decorative flourish. The design voice is functionality-first: cards, lists, and controls dominate above-the-fold real estate, with white space and clear visual hierarchy carrying the rest. The system has a recognizable card-based pattern — white project cards with colored accent tags, paired with floating action buttons for quick task creation.
 
 Inter UI (via Google Fonts) anchors the entire system, ranging from a 32px section header down to a 12px caption. The face's clean geometric forms contribute to the app's no-nonsense, productivity-focused character. Below 768px the system collapses cleanly: project grids stack to single columns, the task list becomes full-width, and action buttons transform into a bottom navigation bar.
 
@@ -58,7 +58,7 @@ Inter UI (via Google Fonts) anchors the entire system, ranging from a 32px secti
 ## Typography
 
 ### Font Family
-**Inter UI** is Dashboardku's typeface. Fallbacks: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif. The variable axes carry from 400 (body, caption) through 500 (subtitle, subheading) up to 700 (display, heading, button labels). The geometric forms and tight spacing create a modern, productive feel.
+**Inter UI** is Dash Xsadev's typeface. Fallbacks: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif. The variable axes carry from 400 (body, caption) through 500 (subtitle, subheading) up to 700 (display, heading, button labels). The geometric forms and tight spacing create a modern, productive feel.
 
 ### Hierarchy
 
@@ -241,7 +241,7 @@ The system runs predominantly flat. Elevation is reserved for two interaction la
 
 **`top-nav`** — Sticky header with logo, search, user menu.
 - Background `{colors.surface}`, height 64px, bottom border `1px solid {colors.hairline}`.
-- Logo left (text "Dashboardku" in `{typography.heading-md}`).
+- Logo left (text "Dash Xsadev" in `{typography.heading-md}`).
 - Search center (search input `{rounded.full}`).
 - User menu right (avatar + dropdown).
 

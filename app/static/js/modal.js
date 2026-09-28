@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   function focusablesIn(modal) {
     return Array.prototype.filter.call(

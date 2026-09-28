@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var ns = (window.Dashboardku = window.Dashboardku || {});
+  var ns = (window.DashXsadev = window.DashXsadev || {});
 
   function init() {
     Object.keys(ns).forEach(function (key) {
@@ -10,7 +10,7 @@
         try {
           ns[key]();
         } catch (err) {
-          console.error("[Dashboardku] Gagal init " + key + ":", err);
+          console.error("[DashXsadev] Gagal init " + key + ":", err);
         }
       }
     });
