@@ -26,8 +26,8 @@ def archived_task(app, done_task):
 class TestArchiveService:
     """TC-12a: arsip/unarchive via service — delegasi state machine."""
 
-    def test_archive_dari_todo_valueerror(self, app):
-        task = task_service.create(title="Belum selesai")
+    def test_archive_dari_todo_valueerror(self, app, sample_project):
+        task = task_service.create(title="Belum selesai", project_id=sample_project.id)
         with pytest.raises(ValueError, match="tidak dapat diarsipkan"):
             task_service.archive(task.id)
 
@@ -55,16 +55,21 @@ class TestArchiveService:
         assert archived[0].archived_at is not None
 
     def test_get_archived_filter_project(self, app, sample_project, archived_task):
-        task_service.create(title="Inbox selesai", status="done")
-        inbox_done = task_service.get_all(filters={"status": "done"})[0]
-        task_service.archive(inbox_done.id)
+        other = project_service.create(name="Lain", color="#111111")
+        task_service.create(title="Project lain selesai", project_id=other.id, status="done")
+        other_done = next(
+            t for t in task_service.get_all(filters={"status": "done"}) if t.project_id == other.id
+        )
+        task_service.archive(other_done.id)
 
         views = task_service.get_archived(filters={"project_id": sample_project.id})
         assert [t.id for t in views] == [archived_task.id]
 
-    def test_get_archived_sort_terbaru_dulu(self, app):
+    def test_get_archived_sort_terbaru_dulu(self, app, sample_project):
         for i in range(3):
-            task = task_service.create(title=f"T{i}", status="done")
+            task = task_service.create(
+                title=f"T{i}", status="done", project_id=sample_project.id
+            )
             task_service.archive(task.id)
 
         views = task_service.get_archived()
@@ -83,10 +88,12 @@ class TestArchiveService:
 
 
 @pytest.fixture
-def many_archived(app):
+def many_archived(app, sample_project):
     """12 task terarsip — untuk uji pagination."""
     for i in range(12):
-        task = task_service.create(title=f"Arsip {i:02d}", status="done")
+        task = task_service.create(
+            title=f"Arsip {i:02d}", status="done", project_id=sample_project.id
+        )
         task_service.archive(task.id)
 
 
@@ -104,9 +111,11 @@ class TestArchivePagination:
         assert len(pagination.items) == 2
 
     def test_paginated_filter_project(self, app, sample_project, archived_task):
-        task_service.create(title="Inbox selesai", status="done")
-        inbox_done = task_service.get_all(filters={"status": "done"})[0]
-        task_service.archive(inbox_done.id)
+        other = project_service.create(name="Lain", color="#111111")
+        done = task_service.create(
+            title="Project lain selesai", project_id=other.id, status="done"
+        )
+        task_service.archive(done.id)
 
         pagination = task_service.get_archived_paginated(
             filters={"project_id": sample_project.id}, page=1, per_page=10
@@ -201,8 +210,8 @@ class TestArchiveRoutes:
         assert "/tasks/kanban" in response.headers["Location"]
         assert db.session.get(Task, done_task.id).archived_at is not None
 
-    def test_archive_post_task_aktif_flash_error(self, client, login_user):
-        task = task_service.create(title="Masih jalan")
+    def test_archive_post_task_aktif_flash_error(self, client, login_user, sample_project):
+        task = task_service.create(title="Masih jalan", project_id=sample_project.id)
         response = client.post(f"/tasks/{task.public_id}/archive", follow_redirects=True)
         assert response.status_code == 200
         assert db.session.get(Task, task.id).archived_at is None

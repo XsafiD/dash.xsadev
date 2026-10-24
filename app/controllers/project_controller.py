@@ -165,10 +165,11 @@ def delete(project_id: str):
     target = _after_write_target(project)
     try:
         project_service.delete(project.id)
-    except ValueError:
-        abort(404)
+    except ValueError as err:
+        flash(str(err), "error")
+        return redirect(url_for("project.detail", project_id=project.public_id))
     message = f"Project '{name}' dihapus."
     if child_count:
         message += f" {child_count} sub project ikut terhapus."
-    flash(message + " Tugas di dalamnya kini tanpa project.", "success")
+    flash(message, "success")
     return redirect(target)

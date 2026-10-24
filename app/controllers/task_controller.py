@@ -108,7 +108,7 @@ def create():
             return redirect(url_for("task.index"))
         except ValueError as err:
             flash(str(err), "error")
-    return render_template("task/create.html", form=form)
+    return render_template("task/create.html", form=form, has_projects=len(form.project_id.choices) > 1)
 
 
 @task_bp.route("/<string:task_id>")

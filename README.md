@@ -8,6 +8,7 @@ Personal Task Management System dengan project organization, task tracking, dan 
 
 - **Task Management** — CRUD task dengan priority, status, deadline, dan auto-completion timestamp
 - **Project & Sub Project** — project berwarna 2 level (project → sub project) dengan soft-delete (archive); arsip project menyembunyikan seluruh cabang
+- **Task Wajib Project** — setiap tugas harus menempel ke project (tanpa Inbox); project hanya bisa dihapus saat tidak punya tugas
 - **Dashboard Analytics** — stats cards (total, completed, overdue), project grid, task overview
 - **Tugas Kanban** — board 3 kolom (Todo/Proses/Selesai) drag & drop SortableJS, warna kolom per status, fallback tombol pindah
 - **Arsip** — arsipkan tugas selesai dari Kanban + arsip otomatis harian 23:59 (APScheduler, toggle di Pengaturan)
@@ -149,7 +150,7 @@ dash-xsadev/
 | GET/POST | `/projects/create` | Form buat project root |
 | GET/POST | `/projects/<id>/sub/create` | Form buat sub project |
 | GET/POST | `/projects/<id>/edit` | Form edit project / pindah root–sub |
-| POST | `/projects/<id>/delete` | Hapus project (+ sub project, task dilepas) |
+| POST | `/projects/<id>/delete` | Hapus project (+ sub project) — hanya bila tanpa tugas |
 | POST | `/projects/<id>/archive` | Archive/unarchive (menyembunyikan cabang) |
 | GET | `/projects/<id>` | Detail project / sub project + task list |
 | GET | `/tasks` | List semua task (+filter project/status/priority) |
@@ -204,7 +205,7 @@ users ─< projects ─< tasks ─< reminders
 |-------|--------|
 | `users` | username, password_hash (bcrypt), created_at |
 | `projects` | name, color (hex), icon, archived, parent_id (NULL = root), created_at |
-| `tasks` | title, description, priority (enum), status (enum), deadline, completed_at |
+| `tasks` | project_id (wajib, FK RESTRICT), title, description, priority (enum), status (enum), deadline, completed_at |
 | `reminders` | type (day_h/relative/absolute), relative_value/unit, absolute_time, sent, sent_at |
 | `notification_logs` | status (pending/sent/failed), response_code/body, retry_count |
 
@@ -231,10 +232,10 @@ Test suite lengkap dengan pytest — semua lulus:
 .venv/bin/python -m pytest -v
 ```
 
-Coverage (180 test pass): auth & session, projects CRUD/archive, hierarki project–sub project
-(validasi kedalaman, hapus berantai, filter subtree), tasks CRUD + state machine + Day-H sync,
-kanban board & endpoint status, arsip & auto-archive scheduler, settings, dashboard stats,
-integrasi PRG/flash/AJAX JSON, anti N+1.
+Coverage (191 test pass): auth & session, projects CRUD/archive, hierarki project–sub project
+(validasi kedalaman, hapus cabang kosong, filter subtree), strict mode task wajib project,
+tasks CRUD + state machine + Day-H sync, kanban board & endpoint status, arsip &
+auto-archive scheduler, settings, dashboard stats, integrasi PRG/flash/AJAX JSON, anti N+1.
 
 ## 🚀 Deployment (Docker Production)
 

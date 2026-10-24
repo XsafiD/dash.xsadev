@@ -25,7 +25,9 @@ Standards repo ini: `docs/coding-standards/` (git submodule).
 | TransactionLine | Reminder (disabled — fase notifikasi) |
 
 Kedalaman hierarki project divalidasi di `ProjectService` (MySQL tidak bisa
-`CHECK` lintas baris); task boleh menempel ke root maupun sub project.
+`CHECK` lintas baris); setiap task wajib menempel ke root atau sub project
+(strict mode — `tasks.project_id` NOT NULL, project hanya bisa dihapus saat
+tidak punya tugas).
 
 ---
 

@@ -166,8 +166,8 @@ class Task(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     public_id: Mapped[str] = mapped_column(String(16), unique=True, nullable=False, default=generate_public_id)
-    project_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("projects.id", ondelete="RESTRICT"), nullable=False
     )
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)

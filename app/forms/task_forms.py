@@ -10,10 +10,10 @@ STATUS_CHOICES = [("todo", "Todo"), ("in_progress", "Sedang Dikerjakan"), ("done
 
 
 def project_choices() -> list[tuple[str, str]]:
-    """Pilihan project dari service — root dulu, sub project berlabel induknya."""
+    """Pilihan project (WAJIB) — placeholder kosong + root diikuti sub project."""
     from app.services.project_service import project_service
 
-    return [("", "Tanpa Project (Inbox)")] + [
+    return [("", "Pilih project...")] + [
         (str(p.id), f"{p.parent_name} / {p.name}" if p.parent_id else p.name)
         for p in project_service.get_hierarchical()
     ]
@@ -31,7 +31,12 @@ class TaskForm(FlaskForm):
         "Penanggung Jawab",
         validators=[Optional(), Length(max=255, message="Penanggung jawab maksimal 255 karakter.")],
     )
-    project_id = SelectField("Project", choices=[("", "Tanpa Project (Inbox)")], coerce=str)
+    project_id = SelectField(
+        "Project",
+        choices=[("", "Pilih project...")],
+        coerce=str,
+        validators=[DataRequired(message="Project wajib dipilih.")],
+    )
     priority = SelectField("Prioritas", choices=PRIORITY_CHOICES, default="medium")
     status = SelectField("Status", choices=STATUS_CHOICES, default="todo")
     deadline = DateTimeLocalField("Deadline", format="%Y-%m-%dT%H:%M", validators=[Optional()])

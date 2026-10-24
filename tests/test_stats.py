@@ -18,9 +18,10 @@ class TestStatsDashboard:
     def test_stats_hitung_lengkap(self, app):
         project = project_service.create(name="P", color="#3B82F6")
         task_service.create(title="Aktif", project_id=project.id)
-        task_service.create(title="Selesai", status="done")
+        task_service.create(title="Selesai", status="done", project_id=project.id)
         task_service.create(
             title="Terlambat",
+            project_id=project.id,
             deadline=datetime.now() - timedelta(days=1),  # sudah lewat
         )
 
@@ -35,8 +36,10 @@ class TestStatsDashboard:
         assert stats.active_projects == 1
 
     def test_task_done_tidak_dihitung_overdue(self, app):
+        project = project_service.create(name="P", color="#3B82F6")
         task_service.create(
             title="Telat tapi selesai",
+            project_id=project.id,
             deadline=datetime.now() - timedelta(days=2),
             status="done",
         )

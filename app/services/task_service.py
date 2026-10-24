@@ -124,10 +124,10 @@ def _sync_day_h_reminder(task: Task) -> None:
         db.session.delete(day_h)
 
 
-def _resolve_project_id(project_id) -> int | None:
-    """Terima None/""/str/int → int | None; project tak ada → ValueError."""
+def _resolve_project_id(project_id) -> int:
+    """Strict mode: project WAJIB. None/"" → ValueError; project tak ada → ValueError."""
     if project_id in (None, ""):
-        return None
+        raise ValueError("Project wajib dipilih.")
     try:
         pid = int(project_id)
     except (TypeError, ValueError):

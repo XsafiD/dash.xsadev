@@ -35,12 +35,17 @@ def _day_h_count(task_id: int) -> int:
 class TestTaskService:
     """TC-07: CRUD Task via service."""
 
-    def test_create_berhasil_default(self, app):
-        task = task_service.create(title="Tugas baru")
+    def test_create_berhasil_default(self, app, sample_project):
+        task = task_service.create(title="Tugas baru", project_id=sample_project.id)
         assert task.id is not None
         assert task.priority.value == "medium"
         assert task.status.value == "todo"
         assert task.completed_at is None
+
+    def test_create_tanpa_project_ditolak(self, app):
+        """Strict mode — task wajib punya project."""
+        with pytest.raises(ValueError, match="Project wajib dipilih"):
+            task_service.create(title="Tanpa project")
 
     def test_create_judul_kosong_valueerror(self, app):
         with pytest.raises(ValueError, match="wajib diisi"):
@@ -50,12 +55,16 @@ class TestTaskService:
         with pytest.raises(ValueError, match="Project tidak ditemukan"):
             task_service.create(title="X", project_id=999)
 
-    def test_create_dengan_assignee(self, app):
-        task = task_service.create(title="Koordinasi acara", assignee="Divisi Ekraf")
+    def test_create_dengan_assignee(self, app, sample_project):
+        task = task_service.create(
+            title="Koordinasi acara", assignee="Divisi Ekraf", project_id=sample_project.id
+        )
         assert task.assignee == "Divisi Ekraf"
 
-    def test_create_assignee_kosong_jadi_none(self, app):
-        task = task_service.create(title="Tanpa PJ", assignee="   ")
+    def test_create_assignee_kosong_jadi_none(self, app, sample_project):
+        task = task_service.create(
+            title="Tanpa PJ", assignee="   ", project_id=sample_project.id
+        )
         assert task.assignee is None
 
     def test_create_assignee_kepanjangan_valueerror(self, app):
@@ -139,8 +148,8 @@ class TestDayHReminderSync:
     def test_deadline_dibuat_reminder_hadir(self, sample_task):
         assert _day_h_count(sample_task.id) == 1
 
-    def test_tanpa_deadline_tanpa_reminder(self, app):
-        task = task_service.create(title="Tanpa deadline")
+    def test_tanpa_deadline_tanpa_reminder(self, app, sample_project):
+        task = task_service.create(title="Tanpa deadline", project_id=sample_project.id)
         assert _day_h_count(task.id) == 0
 
     def test_deadline_dihapus_reminder_terhapus(self, sample_task):
@@ -170,9 +179,15 @@ class TestTaskFilters:
     """TC-09: Filter & sort daftar task."""
 
     def test_filter_status_dan_priority(self, app, sample_project):
-        task_service.create(title="A", priority="high", status="done")
-        task_service.create(title="B", priority="low", status="in_progress")
-        task_service.create(title="C", priority="high")
+        task_service.create(
+            title="A", priority="high", status="done", project_id=sample_project.id
+        )
+        task_service.create(
+            title="B", priority="low", status="in_progress", project_id=sample_project.id
+        )
+        task_service.create(
+            title="C", priority="high", project_id=sample_project.id
+        )
 
         done = task_service.get_all(filters={"status": "done"})
         assert [t.title for t in done] == ["A"]
@@ -181,13 +196,15 @@ class TestTaskFilters:
         assert [t.title for t in high] == ["C"]
 
     def test_filter_project_dan_done_diturunkan(self, app, sample_project):
+        other = project_service.create(name="Lain", color="#111111")
         task_service.create(title="Dalam project", project_id=sample_project.id)
-        task_service.create(title="Inbox")
+        task_service.create(title="Project lain", project_id=other.id)
         task_service.create(title="Selesai", status="done", project_id=sample_project.id)
 
         views = task_service.get_all(filters={"project_id": sample_project.id})
-        assert views[0].title == "Dalam project"  # done paling bawah
-        assert views[-1].title == "Selesai"
+        titles = [v.title for v in views]
+        assert titles == ["Dalam project", "Selesai"]  # done paling bawah
+        assert "Project lain" not in titles
 
 
 class TestTaskRoutes:
@@ -214,6 +231,30 @@ class TestTaskRoutes:
         assert task.assignee == "Divisi Ekraf"
         assert task.deadline == datetime(2026, 9, 5, 14, 30)
         assert _day_h_count(task.id) == 1
+
+    def test_create_tanpa_project_ditolak_form(self, client, login_user, sample_project):
+        """Strict mode: POST tanpa project_id → validasi gagal, task tidak dibuat."""
+        response = client.post(
+            "/tasks/create",
+            data={
+                "title": "Tugas tanpa project",
+                "description": "",
+                "assignee": "",
+                "project_id": "",
+                "priority": "medium",
+                "status": "todo",
+                "deadline": "",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        assert "Project wajib dipilih." in response.data.decode()
+        assert db.session.query(Task).filter_by(title="Tugas tanpa project").first() is None
+
+    def test_form_create_tidak_menawarkan_inbox(self, client, login_user, sample_project):
+        body = client.get("/tasks/create").data.decode()
+        assert "Inbox" not in body
+        assert "Pilih project" in body
 
     def test_detail_render_badge_penanggung_jawab(self, client, login_user, sample_task):
         task_service.update(

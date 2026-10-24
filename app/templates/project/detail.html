@@ -80,10 +80,17 @@
       </button>
     </form>
     {% endif %}
+    {% if project.total_tasks %}
+    <span class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-medium text-steel"
+          title="Project masih memiliki tugas — pindahkan atau hapus dulu sebelum menghapus project.">
+      <i class="fa-solid fa-lock text-[11px]" aria-hidden="true"></i>Hapus butuh 0 tugas
+    </span>
+    {% else %}
     <button type="button" data-modal-target="modal-delete-project" aria-haspopup="dialog"
             class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-medium text-charcoal transition hover:bg-surface-soft hover:text-critical">
       <i class="fa-solid fa-trash text-[12px]" aria-hidden="true"></i>Hapus
     </button>
+    {% endif %}
   </div>
 </div>
 
@@ -260,11 +267,11 @@ document.addEventListener('DOMContentLoaded', function() {
   next_url=url_for("project.detail", project_id=project.public_id),
 ) }}
 
+{% if project.total_tasks == 0 %}
 {% set delete_message = "Project '" ~ project.name ~ "' akan dihapus." %}
 {% if project.child_count %}
 {% set delete_message = delete_message ~ " " ~ project.child_count ~ " sub project ikut terhapus." %}
 {% endif %}
-{% set delete_message = delete_message ~ " Tugas di dalamnya akan menjadi tanpa project." %}
 {{ confirm_modal(
   "modal-delete-project",
   "Hapus project?",
@@ -272,4 +279,5 @@ document.addEventListener('DOMContentLoaded', function() {
   url_for("project.delete", project_id=project.public_id),
   "Hapus Project",
 ) }}
+{% endif %}
 {% endblock %}

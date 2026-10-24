@@ -55,26 +55,36 @@ class TestProjectHierarchyWrite:
         with pytest.raises(ValueError, match="dirinya sendiri"):
             project_service.update(root.id, name="Kuliah", color="#3B82F6", parent_id=str(root.id))
 
-    def test_delete_root_menghapus_child_dan_melepas_task(self, root, sub):
-        task_root = task_service.create(title="Tugas root", project_id=root.id)
-        task_sub = task_service.create(title="Tugas sub", project_id=sub.id)
-        root_id, sub_id, task_root_id, task_sub_id = root.id, sub.id, task_root.id, task_sub.id
+    def test_delete_root_dengan_task_ditolak(self, root, sub):
+        task_service.create(title="Tugas root", project_id=root.id)
+        task_service.create(title="Tugas sub", project_id=sub.id)
+        root_id = root.id
+
+        with pytest.raises(ValueError, match="masih memiliki 2 tugas"):
+            project_service.delete(root_id)
+        db.session.expunge_all()
+        assert db.session.get(Project, root_id) is not None
+
+    def test_delete_root_tanpa_task_menghapus_child(self, root, sub):
+        root_id, sub_id = root.id, sub.id
 
         project_service.delete(root_id)
         db.session.expunge_all()
 
         assert db.session.get(Project, root_id) is None
         assert db.session.get(Project, sub_id) is None
-        surviving = db.session.get(Task, task_root_id)
-        assert surviving is not None and surviving.project_id is None
-        assert db.session.get(Task, task_sub_id).project_id is None
+
+    def test_delete_root_ditolak_bila_task_hanya_di_sub(self, root, sub):
+        task_service.create(title="Tugas sub", project_id=sub.id)
+        with pytest.raises(ValueError, match="masih memiliki 1 tugas"):
+            project_service.delete(root.id)
 
     def test_archive_root_menyembunyikan_cabang(self, root, sub):
         project_service.set_archived(root.id, True)
 
         assert project_service.get_all() == []
         assert project_service.get_hierarchical() == []
-        assert [c[0] for c in project_choices()] == [""]  # hanya opsi Inbox
+        assert [c[0] for c in project_choices()] == [""]  # hanya placeholder
         # data child tidak ikut diarsipkan — pulihkan root mengembalikan cabang
         assert project_service.get_by_id(sub.id).archived is False
         project_service.set_archived(root.id, False)
@@ -91,9 +101,10 @@ class TestProjectHierarchyWrite:
 
 class TestTaskFilterSubtree:
     def test_task_root_mencakup_sub(self, root, sub):
+        other = project_service.create(name="Kerja", color="#111111")
         task_root = task_service.create(title="Root", project_id=root.id)
         task_sub = task_service.create(title="Sub", project_id=sub.id)
-        task_other = task_service.create(title="Lain", project_id=None)
+        task_other = task_service.create(title="Lain", project_id=other.id)
 
         ids = {t.id for t in task_service.get_all(filters={"project_id": root.id})}
         assert ids == {task_root.id, task_sub.id}
@@ -217,12 +228,20 @@ class TestProjectHierarchyRoutes:
         assert response.status_code == 200
         assert f'value="{sub.id}" selected'.encode() in response.data
 
-    def test_delete_root_via_route(self, client, login_user, root, sub):
+    def test_delete_root_dengan_task_via_route_ditolak(self, client, login_user, root, sub):
         task = task_service.create(title="T", project_id=sub.id)
         response = client.post(f"/projects/{root.public_id}/delete", follow_redirects=True)
         assert response.status_code == 200
+        assert b"masih memiliki 1 tugas" in response.data
+        assert db.session.get(Project, root.id) is not None
+        assert db.session.get(Project, sub.id) is not None
+        assert db.session.get(Task, task.id).project_id == sub.id
+
+    def test_delete_root_kosong_via_route(self, client, login_user, root, sub):
+        response = client.post(f"/projects/{root.public_id}/delete", follow_redirects=True)
+        assert response.status_code == 200
+        assert db.session.get(Project, root.id) is None
         assert db.session.get(Project, sub.id) is None
-        assert db.session.get(Task, task.id).project_id is None
 
     def test_archive_sub_redirect_ke_parent(self, client, login_user, root, sub):
         response = client.post(

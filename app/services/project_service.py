@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import case, delete, func, select, update
+from sqlalchemy import case, delete, func, select
 
 from app.extensions import db
 from app.models import Project, Task, TaskStatus
@@ -232,6 +232,20 @@ class ProjectService:
             select(Project.id).where(Project.parent_id == project_id).limit(1)
         ) is not None
 
+    def _subtree_task_count(self, project_id: int) -> int:
+        """Jumlah task milik project + sub project langsungnya (strict mode)."""
+        child_ids = list(
+            db.session.scalars(select(Project.id).where(Project.parent_id == project_id))
+        )
+        return (
+            db.session.scalar(
+                select(func.count(Task.id)).where(
+                    Task.project_id.in_([project_id, *child_ids])
+                )
+            )
+            or 0
+        )
+
     # ── Write ──
     def create(
         self,
@@ -284,14 +298,20 @@ class ProjectService:
         return project
 
     def delete(self, project_id: int) -> Project:
-        """Hapus project + sub project-nya; task di dalamnya dilepas (project_id = NULL)."""
+        """Hapus project + sub project-nya — hanya bila tidak ada task di subtree.
+
+        Strict mode: task wajib punya project, jadi project yang masih berisi
+        task tidak boleh dihapus (task tidak boleh yatim).
+        """
         project = db.session.get(Project, project_id)
         if project is None:
             raise ValueError("Project tidak ditemukan.")
-        child_ids = list(db.session.scalars(select(Project.id).where(Project.parent_id == project_id)))
-        db.session.execute(
-            update(Task).where(Task.project_id.in_([project_id, *child_ids])).values(project_id=None)
-        )
+        task_count = self._subtree_task_count(project_id)
+        if task_count:
+            raise ValueError(
+                f"Project masih memiliki {task_count} tugas (termasuk sub project). "
+                "Pindahkan atau hapus tugasnya dulu."
+            )
         db.session.execute(delete(Project).where(Project.parent_id == project_id))
         db.session.delete(project)
         db.session.commit()

@@ -4,6 +4,7 @@ import pytest
 from app.extensions import db
 from app.models import Setting, Task
 from app.scheduler import run_auto_archive
+from app.services.project_service import project_service
 from app.services.setting_service import (
     AUTO_ARCHIVE_ENABLED,
     AUTO_ARCHIVE_LAST_RUN_AT,
@@ -16,10 +17,11 @@ from app.services.task_service import task_service
 @pytest.fixture
 def done_tasks(app):
     """2 task done aktif + 1 todo + 1 done sudah terarsip."""
-    done_a = task_service.create(title="Selesai A", status="done")
-    done_b = task_service.create(title="Selesai B", status="done")
-    todo = task_service.create(title="Belum")
-    archived = task_service.create(title="Sudah arsip", status="done")
+    project = project_service.create(name="Pekerjaan", color="#3B82F6")
+    done_a = task_service.create(title="Selesai A", status="done", project_id=project.id)
+    done_b = task_service.create(title="Selesai B", status="done", project_id=project.id)
+    todo = task_service.create(title="Belum", project_id=project.id)
+    archived = task_service.create(title="Sudah arsip", status="done", project_id=project.id)
     task_service.archive(archived.id)
     return done_a, done_b, todo, archived
 

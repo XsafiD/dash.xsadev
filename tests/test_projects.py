@@ -44,13 +44,20 @@ class TestProjectService:
         assert project_service.get_all() == []  # exclude archived by default
         assert project_service.set_archived(sample_project.id, False).archived is False
 
-    def test_delete_melepas_task_bukan_menghapus(self, sample_project):
-        task = task_service.create(title="Tugas A", project_id=sample_project.id)
-        project_service.delete(sample_project.id)
+    def test_delete_dengan_task_ditolak(self, sample_project):
+        """Strict mode: project berisi task tidak boleh dihapus (task tak boleh yatim)."""
+        project_id = sample_project.id
+        task_service.create(title="Tugas A", project_id=project_id)
+        with pytest.raises(ValueError, match="masih memiliki 1 tugas"):
+            project_service.delete(project_id)
         db.session.expire_all()
-        surviving = db.session.get(Task, task.id)
-        assert surviving is not None
-        assert surviving.project_id is None
+        assert db.session.get(Project, project_id) is not None
+
+    def test_delete_tanpa_task_menghapus_project(self, sample_project):
+        project_id = sample_project.id
+        project_service.delete(project_id)
+        db.session.expunge_all()
+        assert db.session.get(Project, project_id) is None
 
 
 class TestProjectCounts:

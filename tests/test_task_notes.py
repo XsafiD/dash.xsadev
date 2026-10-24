@@ -4,12 +4,18 @@ import pytest
 from app.extensions import db
 from app.models import TaskNote
 from app.services.note_service import NOTE_MAX_LENGTH, note_service
+from app.services.project_service import project_service
 from app.services.task_service import task_service
 
 
 @pytest.fixture
-def sample_task(app):
-    return task_service.create(title="Riset kompetitor")
+def note_project(app):
+    return project_service.create(name="Riset", color="#3B82F6")
+
+
+@pytest.fixture
+def sample_task(app, note_project):
+    return task_service.create(title="Riset kompetitor", project_id=note_project.id)
 
 
 @pytest.fixture
@@ -53,7 +59,7 @@ class TestNoteService:
         assert note_service.get_for_task(sample_task.id) == []
 
     def test_delete_note_task_lain_valueerror(self, sample_task):
-        other = task_service.create(title="Task lain")
+        other = task_service.create(title="Task lain", project_id=sample_task.project_id)
         note = note_service.add_note(sample_task.id, "Milik task pertama")
         with pytest.raises(ValueError, match="Catatan tidak ditemukan"):
             note_service.delete_note(other.id, note.id)
@@ -119,7 +125,7 @@ class TestNoteRoutes:
         assert b"Sementara" not in resp.data
 
     def test_delete_note_task_lain_404(self, client, login_user, sample_task):
-        other = task_service.create(title="Task lain")
+        other = task_service.create(title="Task lain", project_id=sample_task.project_id)
         note = note_service.add_note(sample_task.id, "Milik task pertama")
         resp = client.post(f"/tasks/{other.public_id}/notes/{note.id}/delete")
         assert resp.status_code == 404
