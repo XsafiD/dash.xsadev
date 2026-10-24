@@ -190,3 +190,11 @@ Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dal
 
 Rencana:
 Dibagian catatan, ada fitur copy/cetatan, jadi ada tombol copy di dekat tombol hapus
+
+# 2026-10-25 - Update Fitur sub project, cukup 2 level
+
+Kondisi:
+Aplikasi saat ini sudah jadi dan bisa berjalan dengan normal dan masih terus dalam pengambangan, MySQL menggunakan docker dan framework menggunakan flask, metode penulisan di @AGENTS.md dan desain style ada di @DESIGN.md
+
+Rencana:
+Dibagian project sebenarnya sudah bagus, project lalu Tugas dan Arsip tugas, tapi jika project hanya 1 level dan langsung tugas, aku masih cukup kesulitan dalam membuat kategori, jadi rencanaku aku ingin membuat 2 level project, jadi ada project dan sub project, dan sub project ada tugas dan arsip tugas, gimana menurutmu? dan bagaimana timeline update agar tidak merusak data yang sudah ada?
