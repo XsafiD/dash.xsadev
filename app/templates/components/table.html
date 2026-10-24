@@ -1,5 +1,5 @@
 {# components/table.html — macro tabel task (detail project): Tugas aktif & Arsip #}
-{% from "components/badge.html" import deadline_badge, priority_badge, status_badge %}
+{% from "components/badge.html" import deadline_badge, priority_badge, project_tag, status_badge %}
 
 {%- set _TH = "px-4 py-3 text-[12px] font-semibold uppercase tracking-wide text-steel" -%}
 {%- set _TD = "px-4 py-3 align-middle" -%}
@@ -7,13 +7,16 @@
 {%- set _ACTION_BTN = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium text-slate transition hover:bg-surface-soft" -%}
 
 {#- Tabel tugas AKTIF — quick-toggle ✓ tetap wired via task.js (hook data-task-item di <tr>). -#}
-{% macro task_table(tasks, next_url=None) -%}
+{% macro task_table(tasks, next_url=None, show_project=false) -%}
 <div class="overflow-x-auto rounded-lg border border-hairline bg-surface">
   <table class="w-full text-left">
     <thead>
       <tr class="border-b border-hairline">
         <th scope="col" class="{{ _TH }}"><span class="sr-only">Tandai selesai</span></th>
         <th scope="col" class="{{ _TH }}">Judul</th>
+        {% if show_project %}
+        <th scope="col" class="{{ _TH }} hidden md:table-cell">Project</th>
+        {% endif %}
         <th scope="col" class="{{ _TH }} hidden md:table-cell">Prioritas</th>
         <th scope="col" class="{{ _TH }} hidden md:table-cell">Status</th>
         <th scope="col" class="{{ _TH }}">Deadline</th>
@@ -41,6 +44,12 @@
              class="block max-w-[280px] truncate font-medium text-ink-deep transition hover:text-primary md:max-w-none"
              title="{{ task.title }}">{{ task.title }}</a>
         </td>
+        {% if show_project %}
+        <td class="{{ _TD }} hidden md:table-cell">
+          {% if task.project_name %}{{ project_tag(task.project_name, task.project_color, url_for('project.detail', project_id=task.project_public_id)) }}
+          {% else %}<span class="text-[14px] text-slate">—</span>{% endif %}
+        </td>
+        {% endif %}
         <td class="{{ _TD }} hidden md:table-cell">{{ priority_badge(task.priority) }}</td>
         <td class="{{ _TD }} hidden md:table-cell"><span data-task-status-badge>{{ status_badge(task.status) }}</span></td>
         <td class="{{ _TD }}">
@@ -68,12 +77,15 @@
 
 {#- Tabel tugas TERARSIP — tanpa toggle (state terkunci done); aksi unarchive + hapus permanen.
     Tombol hapus hanya PEMICU modal (data-confirm-*) — modal render terpisah di page (confirm_modal_dynamic). -#}
-{% macro archived_task_table(tasks, back_url=None, modal_id="modal-delete-archived-task") -%}
+{% macro archived_task_table(tasks, back_url=None, modal_id="modal-delete-archived-task", show_project=false) -%}
 <div class="overflow-x-auto rounded-lg border border-hairline bg-surface">
   <table class="w-full text-left">
     <thead>
       <tr class="border-b border-hairline">
         <th scope="col" class="{{ _TH }}">Judul</th>
+        {% if show_project %}
+        <th scope="col" class="{{ _TH }} hidden md:table-cell">Project</th>
+        {% endif %}
         <th scope="col" class="{{ _TH }} hidden md:table-cell">Selesai</th>
         <th scope="col" class="{{ _TH }}">Diarsipkan</th>
         <th scope="col" class="{{ _TH }}"><span class="sr-only">Aksi</span></th>
@@ -87,6 +99,12 @@
              class="block max-w-[280px] truncate font-medium text-stone line-through transition hover:text-primary md:max-w-none"
              title="{{ task.title }}">{{ task.title }}</a>
         </td>
+        {% if show_project %}
+        <td class="{{ _TD }} hidden md:table-cell">
+          {% if task.project_name %}{{ project_tag(task.project_name, task.project_color, url_for('project.detail', project_id=task.project_public_id)) }}
+          {% else %}<span class="text-[14px] text-slate">—</span>{% endif %}
+        </td>
+        {% endif %}
         <td class="{{ _TD }} hidden text-[14px] text-slate md:table-cell">{{ task.completed_at | fmt_date }}</td>
         <td class="{{ _TD }} text-[14px] text-slate">{{ task.archived_at | fmt_date }}</td>
         <td class="{{ _TD }}">

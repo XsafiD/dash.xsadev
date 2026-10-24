@@ -2,18 +2,37 @@
 {% from "components/form.html" import submit_button, cancel_link, text_field %}
 {% from "components/page_path.html" import page_path %}
 
-{% block title %}Tambah Project · dash.xsadev{% endblock %}
+{% block title %}{{ "Tambah Sub Project" if parent else "Tambah Project" }} · dash.xsadev{% endblock %}
 
-{% block page_title %}Tambah Project{% endblock %}
+{% block page_title %}{{ "Tambah Sub Project" if parent else "Tambah Project" }}{% endblock %}
 
 {% block authenticated_content %}
+{% if parent %}
+{{ page_path([
+     {"label": "Project", "href": url_for("project.index")},
+     {"label": parent.name, "href": url_for("project.detail", project_id=parent.public_id)},
+     {"label": "Tambah Sub Project"},
+   ]) }}
+{% else %}
 {{ page_path([
      {"label": "Project", "href": url_for("project.index")},
      {"label": "Tambah Project"},
    ]) }}
+{% endif %}
 
 <div class="max-w-xl">
-  <p class="text-[14px] text-slate">Buat wadah baru untuk mengelompokkan tugas.</p>
+  {% if parent %}
+  <p class="text-[14px] text-slate">
+    Buat sub project di bawah
+    <a href="{{ url_for('project.detail', project_id=parent.public_id) }}" class="font-medium text-primary hover:text-primary-deep">{{ parent.name }}</a>.
+  </p>
+  <div class="mt-3 flex items-center gap-2 rounded-lg border border-hairline bg-surface-soft px-4 py-3 text-[14px] text-charcoal">
+    <i class="fa-solid fa-folder-tree text-[13px] text-slate" aria-hidden="true"></i>
+    Parent: <span class="font-medium text-ink-deep">{{ parent.name }}</span>
+  </div>
+  {% else %}
+  <p class="text-[14px] text-slate">Buat wadah baru untuk mengelompokkan tugas. Sub project bisa ditambahkan setelah project dibuat.</p>
+  {% endif %}
 
   <form method="post" class="mt-4 space-y-5 rounded-lg border border-hairline bg-surface p-6">
     {{ form.hidden_tag() }}
@@ -25,8 +44,8 @@
       Nama ikon mengikuti Font Awesome v6 tanpa prefix, mis. <code class="rounded bg-surface-soft px-1">briefcase</code>.
     </p>
     <div class="flex items-center gap-3 pt-2">
-      {{ submit_button("Simpan Project", icon="fa-check") }}
-      {{ cancel_link(url_for("project.index")) }}
+      {{ submit_button("Simpan Sub Project" if parent else "Simpan Project", icon="fa-check") }}
+      {{ cancel_link(url_for("project.detail", project_id=parent.public_id) if parent else url_for("project.index")) }}
     </div>
   </form>
 </div>

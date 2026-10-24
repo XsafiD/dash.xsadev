@@ -30,7 +30,7 @@
 
 {# ── Filter bar + jumlah per halaman ── #}
 {% set project_options = [("", "Semua Project")] %}
-{% for project in projects_all %}{% set _ = project_options.append((project.id, project.name)) %}{% endfor %}
+{% for project in projects_all %}{% set label = (project.parent_name ~ " / " ~ project.name) if project.parent_id else project.name %}{% set _ = project_options.append((project.id, label)) %}{% endfor %}
 {% set per_page_opts = [] %}
 {% for option in per_page_options %}{% set _ = per_page_opts.append((option, option ~ ' / halaman')) %}{% endfor %}
 <form method="get" data-skeleton class="mt-6 flex flex-wrap items-center gap-3" aria-label="Filter arsip">

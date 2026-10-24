@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import case, func, select, update
+from sqlalchemy import case, delete, func, select, update
 
 from app.extensions import db
 from app.models import Project, Task, TaskStatus
@@ -123,7 +123,17 @@ class ProjectService:
                 archived += child_archived
             views.append(_to_view(project, total, active, archived, len(ids)))
 
-        return views if include_archived else [v for v in views if not v.archived]
+        return views if include_archived else self._visible_branch(views)
+
+    @staticmethod
+    def _visible_branch(views: list[ProjectView]) -> list[ProjectView]:
+        """Buang project terarsip DAN sub project dari parent terarsip.
+
+        Arsip parent = sembunyikan satu cabang (tanpa menulis flag children).
+        """
+        visible = [v for v in views if not v.archived]
+        visible_ids = {v.id for v in visible}
+        return [v for v in visible if v.parent_id is None or v.parent_id in visible_ids]
 
     def get_roots(self, include_archived: bool = False) -> list[ProjectView]:
         """Project level 1 saja (`parent_id` NULL) — counts sudah roll-up."""
@@ -181,6 +191,16 @@ class ProjectService:
         ).one()
         return row[0] or 0, int(row[1] or 0)
 
+    def count_roots(self) -> tuple[int, int]:
+        """Return (total_root, root_aktif) — statistik dashboard tanpa sub project."""
+        row = db.session.execute(
+            select(
+                func.count(Project.id),
+                func.coalesce(func.sum(case((Project.archived.is_(False), 1), else_=0)), 0),
+            ).where(Project.parent_id.is_(None))
+        ).one()
+        return row[0] or 0, int(row[1] or 0)
+
     # ── Validasi (multi-layer: border form + sini — 16-security.md #4) ──
     def _validate(self, name: str, color: str) -> None:
         if not name or not name.strip():
@@ -190,26 +210,68 @@ class ProjectService:
         if not HEX_COLOR_PATTERN.match(color or ""):
             raise ValueError("Warna harus format hex, mis. #3B82F6.")
 
+    def _resolve_parent(self, parent_id, exclude_id: int | None = None) -> int | None:
+        """Validasi parent: harus root, bukan diri sendiri. Kedalaman maks. 1 level."""
+        if parent_id in (None, ""):
+            return None
+        try:
+            pid = int(parent_id)
+        except (TypeError, ValueError):
+            raise ValueError("Parent project tidak valid.") from None
+        if pid == exclude_id:
+            raise ValueError("Project tidak bisa menjadi parent dirinya sendiri.")
+        parent = db.session.get(Project, pid)
+        if parent is None:
+            raise ValueError("Parent project tidak ditemukan.")
+        if parent.parent_id is not None:
+            raise ValueError("Sub project tidak bisa memiliki sub project lagi (maksimal 2 level).")
+        return pid
+
+    def _has_children(self, project_id: int) -> bool:
+        return db.session.scalar(
+            select(Project.id).where(Project.parent_id == project_id).limit(1)
+        ) is not None
+
     # ── Write ──
-    def create(self, name: str, color: str, icon: str | None = None) -> Project:
+    def create(
+        self,
+        name: str,
+        color: str,
+        icon: str | None = None,
+        parent_id=None,
+    ) -> Project:
         self._validate(name, color)
         project = Project(
             name=name.strip(),
             color=color,
             icon=(icon or "").strip().removeprefix("fa-") or None,
+            parent_id=self._resolve_parent(parent_id),
         )
         db.session.add(project)
         db.session.commit()
         return project
 
-    def update(self, project_id: int, name: str, color: str, icon: str | None = None) -> Project:
+    def update(
+        self,
+        project_id: int,
+        name: str,
+        color: str,
+        icon: str | None = None,
+        parent_id=None,
+    ) -> Project:
         project = db.session.get(Project, project_id)
         if project is None:
             raise ValueError("Project tidak ditemukan.")
         self._validate(name, color)
+        resolved = self._resolve_parent(parent_id, exclude_id=project.id)
+        if resolved is not None and self._has_children(project.id):
+            raise ValueError(
+                "Project ini memiliki sub project sehingga tidak bisa dijadikan sub project."
+            )
         project.name = name.strip()
         project.color = color
         project.icon = (icon or "").strip().removeprefix("fa-") or None
+        project.parent_id = resolved
         db.session.commit()
         return project
 
@@ -222,13 +284,15 @@ class ProjectService:
         return project
 
     def delete(self, project_id: int) -> Project:
-        """Hapus project; task di dalamnya dilepas (project_id = NULL), tidak ikut terhapus."""
+        """Hapus project + sub project-nya; task di dalamnya dilepas (project_id = NULL)."""
         project = db.session.get(Project, project_id)
         if project is None:
             raise ValueError("Project tidak ditemukan.")
+        child_ids = list(db.session.scalars(select(Project.id).where(Project.parent_id == project_id)))
         db.session.execute(
-            update(Task).where(Task.project_id == project_id).values(project_id=None)
+            update(Task).where(Task.project_id.in_([project_id, *child_ids])).values(project_id=None)
         )
+        db.session.execute(delete(Project).where(Project.parent_id == project_id))
         db.session.delete(project)
         db.session.commit()
         return project

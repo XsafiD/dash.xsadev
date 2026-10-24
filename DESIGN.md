@@ -280,10 +280,11 @@ The system runs predominantly flat. Elevation is reserved for two interaction la
 - Done: judul `{colors.stone}` + strikethrough (`is-done`).
 - Hover: lift `translateY(-2px)` + elevasi level 1; Drag: cursor grab; ghost saat drag = opacity 0.4 + border dashed; kartu terangkat = elevasi level 1; fallback keyboard/touch = tombol "Pindah" ‹ › di footer kartu.
 
-**`project-detail`** — Project overview with stats + task list.
-- Header: Project name, color tag, stats (total/active/completed).
-- Body: Task list filtered by project.
-- Actions: Edit project, archive project.
+**`project-detail`** — Project overview with stats + sub project + task list.
+- Header: Project name, color tag, stats (total/active/completed). Root: statistik roll-up seluruh sub project; sub project: miliknya sendiri + badge "Sub Project".
+- Body root: section `sub-project-grid` (kartu sub project, arsip collapsible) lalu task list subtree — kolom project muncul saat root punya sub project.
+- Body sub project: breadcrumb `Project / Parent / Sub`, task list milik sub project.
+- Actions: Tambah Sub Project (root), Edit (termasuk pindah root/sub), archive (menyembunyikan cabang), delete (root: hapus berantai, task dilepas ke Inbox).
 
 **`reminder-config`** — Reminder configuration card.
 - Reminder type selector (Day H, Relative, Absolute).

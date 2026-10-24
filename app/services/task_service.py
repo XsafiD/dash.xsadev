@@ -137,6 +137,12 @@ def _resolve_project_id(project_id) -> int | None:
     return pid
 
 
+def _project_scope(project_id: int) -> list[int]:
+    """ID project + sub project langsungnya — filter project ikut subtree (maks. 2 level)."""
+    child_ids = db.session.scalars(select(Project.id).where(Project.parent_id == project_id)).all()
+    return [project_id, *child_ids]
+
+
 class TaskService:
     """CRUD + aturan bisnis Task."""
 
@@ -158,7 +164,7 @@ class TaskService:
             query = query.filter(Task.priority == TaskPriority(filters["priority"]))
         project_id = filters.get("project_id")
         if project_id is not None:
-            query = query.filter(Task.project_id == project_id)
+            query = query.filter(Task.project_id.in_(_project_scope(project_id)))
 
         query = query.order_by(
             case((Task.status == TaskStatus.DONE, 1), else_=0),
@@ -179,7 +185,7 @@ class TaskService:
 
         project_id = filters.get("project_id")
         if project_id is not None:
-            query = query.filter(Task.project_id == project_id)
+            query = query.filter(Task.project_id.in_(_project_scope(project_id)))
 
         query = query.order_by(Task.archived_at.desc(), Task.id.desc())
         return [_to_view(t, now) for t in query.all()]
@@ -210,7 +216,7 @@ class TaskService:
 
         project_id = filters.get("project_id")
         if project_id is not None:
-            query = query.filter(Task.project_id == project_id)
+            query = query.filter(Task.project_id.in_(_project_scope(project_id)))
 
         query = query.order_by(Task.archived_at.desc(), Task.id.desc())
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)

@@ -20,9 +20,12 @@ Standards repo ini: `docs/coding-standards/` (git submodule).
 | ----------- | ------------------ |
 | Actor       | User (tabel `users`, single-user; fitur multi-user menyusul) |
 | AdminRole   | — (belum ada, single-user) |
-| Entity      | Project |
+| Entity      | Project (root) / Sub Project (`projects.parent_id`, maks. 2 level) |
 | Transaction | Task |
 | TransactionLine | Reminder (disabled — fase notifikasi) |
+
+Kedalaman hierarki project divalidasi di `ProjectService` (MySQL tidak bisa
+`CHECK` lintas baris); task boleh menempel ke root maupun sub project.
 
 ---
 

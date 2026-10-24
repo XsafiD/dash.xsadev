@@ -19,8 +19,8 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 @login_required
 def dashboard():
-    projects = project_service.get_all()
-    total_projects, active_projects = project_service.count_all()
+    projects = project_service.get_roots()
+    total_projects, active_projects = project_service.count_roots()
     stats = task_service.get_stats(
         total_projects=total_projects,
         active_projects=active_projects,

@@ -46,7 +46,7 @@ def index():
             filters=filters, page=page, per_page=per_page
         ),
         filters=filters,
-        projects_all=project_service.get_all(),
+        projects_all=project_service.get_hierarchical(),
         per_page_options=PER_PAGE_OPTIONS,
         per_page=per_page,
     )

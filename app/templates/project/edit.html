@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/dropdown.html" import combobox_field %}
 {% from "components/form.html" import cancel_link, submit_button, text_field %}
 {% from "components/page_path.html" import page_path %}
 
@@ -7,14 +8,23 @@
 {% block page_title %}Edit {{ project.name }}{% endblock %}
 
 {% block authenticated_content %}
+{% if project.parent_id %}
+{{ page_path([
+     {"label": "Project", "href": url_for("project.index")},
+     {"label": project.parent_name, "href": url_for("project.detail", project_id=project.parent_public_id)},
+     {"label": project.name, "href": url_for("project.detail", project_id=project.public_id)},
+     {"label": "Edit"},
+   ]) }}
+{% else %}
 {{ page_path([
      {"label": "Project", "href": url_for("project.index")},
      {"label": project.name, "href": url_for("project.detail", project_id=project.public_id)},
      {"label": "Edit"},
    ]) }}
+{% endif %}
 
 <div class="max-w-xl">
-  <p class="text-[14px] text-slate">Perbarui detail project {{ project.name }}.</p>
+  <p class="text-[14px] text-slate">Perbarui detail {{ "sub project" if project.parent_id else "project" }} {{ project.name }}.</p>
 
   <form method="post" class="mt-4 space-y-5 rounded-lg border border-hairline bg-surface p-6">
     {{ form.hidden_tag() }}
@@ -25,6 +35,18 @@
       <i class="fa-solid fa-circle-info mr-1" aria-hidden="true"></i>
       Nama ikon mengikuti Font Awesome v6 tanpa prefix, mis. <code class="rounded bg-surface-soft px-1">briefcase</code>.
     </p>
+    {% if project.child_count == 0 %}
+    {{ combobox_field(form.parent_id, placeholder="Cari project induk...") }}
+    <p class="text-[12px] text-steel">
+      <i class="fa-solid fa-circle-info mr-1" aria-hidden="true"></i>
+      Pilih "Project Utama" agar tetap di level 1. Sub project tidak bisa memiliki sub project lagi.
+    </p>
+    {% else %}
+    <div class="flex items-start gap-2 rounded-lg border border-hairline bg-surface-soft px-4 py-3 text-[12px] text-slate">
+      <i class="fa-solid fa-circle-info mt-0.5" aria-hidden="true"></i>
+      <span>Project ini memiliki {{ project.child_count }} sub project, jadi tetap berada di level utama.</span>
+    </div>
+    {% endif %}
     <div class="flex items-center gap-3 pt-2">
       {{ submit_button("Simpan Perubahan", icon="fa-check") }}
       {{ cancel_link(url_for("project.detail", project_id=project.public_id)) }}

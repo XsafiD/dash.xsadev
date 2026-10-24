@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "components/card.html" import empty_state %}
+{% from "components/card.html" import empty_state, project_card %}
 {% from "components/table.html" import task_table, archived_task_table %}
 {% from "components/modal.html" import confirm_modal, confirm_modal_dynamic %}
 {% from "components/page_path.html" import page_path %}
@@ -9,10 +9,20 @@
 {% block page_title %}{{ project.name }}{% endblock %}
 
 {% block authenticated_content %}
+{% if project.parent_id %}
+{{ page_path([
+     {"label": "Project", "href": url_for("project.index")},
+     {"label": project.parent_name, "href": url_for("project.detail", project_id=project.parent_public_id)},
+     {"label": project.name},
+   ]) }}
+{% else %}
 {{ page_path([
      {"label": "Project", "href": url_for("project.index")},
      {"label": project.name},
    ]) }}
+{% endif %}
+
+{% set show_project_col = project.parent_id is none and project.child_count > 0 %}
 
 <div class="flex flex-col gap-6">
   <!-- Project Header -->
@@ -22,12 +32,33 @@
         <i class="fa-solid fa-{{ project.icon or 'folder' }} text-xl" aria-hidden="true"></i>
       </span>
       <div>
-        <h1 class="text-[28px] font-bold leading-tight text-ink-deep md:text-[32px]">{{ project.name }}</h1>
-        <p class="mt-1 text-[12px] text-steel">Dibuat {{ project.created_at | fmt_date }}</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <h1 class="text-[28px] font-bold leading-tight text-ink-deep md:text-[32px]">{{ project.name }}</h1>
+          {% if project.parent_id %}
+          <span class="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[12px] font-medium text-primary">
+            <i class="fa-solid fa-folder-tree text-[11px]" aria-hidden="true"></i>Sub Project
+          </span>
+          {% endif %}
+          {% if project.archived %}
+          <span class="inline-flex items-center gap-1 rounded-full bg-surface-soft px-2.5 py-1 text-[12px] font-medium text-slate">
+            <i class="fa-solid fa-box-archive text-[11px]" aria-hidden="true"></i>Diarsipkan
+          </span>
+          {% endif %}
+        </div>
+        <p class="mt-1 text-[12px] text-steel">
+          Dibuat {{ project.created_at | fmt_date }}{% if project.parent_id %} · bagian dari
+          <a href="{{ url_for('project.detail', project_id=project.parent_public_id) }}" class="font-medium text-slate transition hover:text-primary">{{ project.parent_name }}</a>{% endif %}
+        </p>
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center gap-2">
+      {% if project.parent_id is none and not project.archived %}
+      <a href="{{ url_for('project.create_sub', project_id=project.public_id) }}"
+         class="inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-[14px] font-medium text-primary transition hover:bg-primary-soft">
+        <i class="fa-solid fa-folder-plus text-[12px]" aria-hidden="true"></i>Sub Project
+      </a>
+      {% endif %}
       <a href="{{ url_for('project.edit', project_id=project.public_id) }}"
        class="inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-[14px] font-medium text-primary transition hover:bg-primary-soft">
       <i class="fa-solid fa-pen text-[12px]" aria-hidden="true"></i>Edit
@@ -76,6 +107,55 @@
   </div>
   {% endfor %}
 </section>
+{% if project.parent_id is none and project.child_count %}
+<p class="mt-2 text-[12px] text-steel">
+  <i class="fa-solid fa-circle-info mr-1" aria-hidden="true"></i>
+  Statistik dan daftar tugas menjumlahkan seluruh sub project.
+</p>
+{% endif %}
+
+{# ── Sub project (hanya untuk project root) ── #}
+{% if project.parent_id is none %}
+<section class="mt-10" aria-label="Sub project">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-hairline-soft pb-4">
+    <h2 class="flex items-center gap-2 text-[20px] font-bold text-ink-deep">
+      Sub Project
+      <span class="inline-flex items-center rounded-full bg-surface-soft px-2 py-0.5 text-[12px] font-medium text-slate">
+        {{ sub_projects | length }}
+      </span>
+    </h2>
+    {% if not project.archived %}
+    <a href="{{ url_for('project.create_sub', project_id=project.public_id) }}"
+       class="inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-[14px] font-medium text-primary transition hover:bg-primary-soft">
+      <i class="fa-solid fa-plus text-[12px]" aria-hidden="true"></i>Tambah Sub Project
+    </a>
+    {% endif %}
+  </div>
+
+  {% if sub_projects %}
+  <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {% for sub in sub_projects %}{{ project_card(sub) }}{% endfor %}
+  </div>
+  {% else %}
+  <div class="mt-5 rounded-lg border border-dashed border-hairline bg-surface px-6 py-8 text-center">
+    <p class="text-[14px] font-medium text-ink-deep">Belum ada sub project</p>
+    <p class="mt-1 text-[14px] text-slate">Pecah project ini menjadi beberapa sub project agar tugas lebih terkelompok.</p>
+  </div>
+  {% endif %}
+
+  {% if archived_sub_projects %}
+  <details class="mt-6">
+    <summary class="flex cursor-pointer items-center gap-2 border-b border-hairline-soft pb-3 text-[14px] font-medium text-charcoal">
+      <i class="fa-solid fa-box-archive text-[12px] text-slate" aria-hidden="true"></i>
+      Sub project diarsipkan ({{ archived_sub_projects | length }})
+    </summary>
+    <div class="mt-5 grid grid-cols-1 gap-5 opacity-80 sm:grid-cols-2 lg:grid-cols-3">
+      {% for sub in archived_sub_projects %}{{ project_card(sub) }}{% endfor %}
+    </div>
+  </details>
+  {% endif %}
+</section>
+{% endif %}
 
 {# ── Filter button group + tombol tambah ── #}
 <section class="mt-10" aria-label="Tugas project">
@@ -111,16 +191,16 @@
   {# ── Tabel Tugas Aktif ── #}
   <div id="panel-tasks" class="mt-5" role="tabpanel">
     {% if tasks %}
-      {{ task_table(tasks, next_url=url_for('project.detail', project_id=project.public_id)) }}
+      {{ task_table(tasks, next_url=url_for('project.detail', project_id=project.public_id), show_project=show_project_col) }}
     {% else %}
-      {{ empty_state("fa-list-check", "Belum ada tugas", "Project ini belum memiliki tugas.", url_for('task.create', project_id=project.public_id), "Tambah Tugas") }}
+      {{ empty_state("fa-list-check", "Belum ada tugas", "Belum ada tugas di " ~ ("project ini maupun sub project." if show_project_col else "project ini."), url_for('task.create', project_id=project.public_id), "Tambah Tugas") }}
     {% endif %}
   </div>
 
   {# ── Tabel Arsip ── #}
   <div id="panel-archive" class="mt-5 hidden" role="tabpanel">
     {% if archived_tasks %}
-      {{ archived_task_table(archived_tasks, back_url=url_for('project.detail', project_id=project.public_id)) }}
+      {{ archived_task_table(archived_tasks, back_url=url_for('project.detail', project_id=project.public_id), show_project=show_project_col) }}
     {% else %}
       {{ empty_state("fa-box-archive", "Belum ada arsip", "Tugas selesai dapat diarsipkan dari tab Tugas.", "#", "Lihat Tugas", data_action="switch-tab", data_tab="tasks") }}
     {% endif %}
@@ -180,10 +260,15 @@ document.addEventListener('DOMContentLoaded', function() {
   next_url=url_for("project.detail", project_id=project.public_id),
 ) }}
 
+{% set delete_message = "Project '" ~ project.name ~ "' akan dihapus." %}
+{% if project.child_count %}
+{% set delete_message = delete_message ~ " " ~ project.child_count ~ " sub project ikut terhapus." %}
+{% endif %}
+{% set delete_message = delete_message ~ " Tugas di dalamnya akan menjadi tanpa project." %}
 {{ confirm_modal(
   "modal-delete-project",
   "Hapus project?",
-  "Project '" ~ project.name ~ "' akan dihapus. Tugas di dalamnya akan menjadi tanpa project.",
+  delete_message,
   url_for("project.delete", project_id=project.public_id),
   "Hapus Project",
 ) }}

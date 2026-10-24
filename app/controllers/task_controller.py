@@ -87,7 +87,7 @@ def index():
         filters=filters,
         status_choices=STATUS_CHOICES,
         priority_choices=PRIORITY_CHOICES,
-        projects_all=project_service.get_all(),
+        projects_all=project_service.get_hierarchical(),
     )
 
 
@@ -98,7 +98,9 @@ def create():
     form.project_id.choices = project_choices()
     preselect = request.args.get("project_id", "")
     if request.method == "GET" and preselect:
-        form.project_id.data = preselect
+        project = project_service.get_by_public_id(preselect)  # link memakai public_id
+        if project is not None:
+            form.project_id.data = str(project.id)
     if form.validate_on_submit():
         try:
             task = task_service.create(**_form_payload(form))
