@@ -147,7 +147,10 @@ class Project(db.Model):
         passive_deletes=True,
         order_by="Project.name",
     )
-    tasks: Mapped[list[Task]] = relationship(back_populates="project", lazy="selectin")
+    # Reverse direction → default lazy (02-model.md #7). Counts project
+    # dihitung via aggregate di ProjectService; eager-load seluruh task
+    # (dulu selectin) membuat tiap listing project ikut menarik semua task.
+    tasks: Mapped[list[Task]] = relationship(back_populates="project", lazy="select")
 
 
 class Task(db.Model):

@@ -10,11 +10,12 @@ STATUS_CHOICES = [("todo", "Todo"), ("in_progress", "Sedang Dikerjakan"), ("done
 
 
 def project_choices() -> list[tuple[str, str]]:
-    """Pilihan project dari service (mock Phase 1) — dipasang di controller."""
+    """Pilihan project dari service — root dulu, sub project berlabel induknya."""
     from app.services.project_service import project_service
 
     return [("", "Tanpa Project (Inbox)")] + [
-        (str(p.id), p.name) for p in project_service.get_all()
+        (str(p.id), f"{p.parent_name} / {p.name}" if p.parent_id else p.name)
+        for p in project_service.get_hierarchical()
     ]
 
 

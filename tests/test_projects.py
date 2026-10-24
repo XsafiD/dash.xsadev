@@ -1,7 +1,9 @@
 """tests/test_projects.py — TC: CRUD Project (service + route)."""
 import pytest
+from sqlalchemy import event
 
 from app.extensions import db
+from app.forms.task_forms import project_choices
 from app.models import Project, Task
 from app.services.project_service import project_service
 from app.services.task_service import task_service
@@ -124,3 +126,92 @@ class TestProjectRoutes:
         assert response.status_code == 200
         assert b"hex" in response.data
         assert db.session.query(Project).filter_by(name="X").first() is None
+
+
+def _create_child(parent: Project, name: str) -> Project:
+    """Bikin sub project langsung via model — service.create belum terima parent (Fase 3)."""
+    child = Project(name=name, color="#111111", parent=parent)
+    db.session.add(child)
+    db.session.commit()
+    return child
+
+
+class TestProjectHierarchyRead:
+    """TC-07: read layer hierarki project — Fase 2."""
+
+    def test_get_roots_hanya_root_dan_child_count(self, app, sample_project):
+        child = _create_child(sample_project, "Sub A")
+
+        roots = project_service.get_roots()
+        assert [r.id for r in roots] == [sample_project.id]
+        assert roots[0].child_count == 1
+        assert roots[0].parent_id is None
+
+        child_view = project_service.get_by_id(child.id)
+        assert child_view.parent_public_id == sample_project.public_id
+        assert child_view.parent_name == "Pekerjaan"
+        assert child_view.child_count == 0
+
+    def test_counts_root_menjumlahkan_sub_project(self, app, sample_project):
+        child = _create_child(sample_project, "Sub A")
+        task_service.create(title="Root aktif", project_id=sample_project.id)
+        task_service.create(title="Sub done", project_id=child.id, status="done")
+
+        root = project_service.get_by_id(sample_project.id)
+        assert root.total_tasks == 2
+        assert root.active_tasks == 1
+        assert root.done_tasks == 1
+
+        child_view = project_service.get_by_id(child.id)
+        assert child_view.total_tasks == 1
+        assert child_view.active_tasks == 0
+
+    def test_counts_root_tetap_menghitung_sub_terarsip(self, app, sample_project):
+        child = _create_child(sample_project, "Sub A")
+        project_service.set_archived(child.id, True)
+        task_service.create(title="T", project_id=child.id)
+
+        root = project_service.get_by_id(sample_project.id)
+        assert root.child_count == 1
+        assert root.total_tasks == 1  # subtree tetap dihitung walau sub diarsipkan
+        assert project_service.get_children(sample_project.id) == []
+        assert [v.id for v in project_service.get_children(sample_project.id, include_archived=True)] == [child.id]
+
+    def test_get_hierarchical_root_lalu_sub_dan_skip_parent_arsip(self, app, sample_project):
+        beta = _create_child(sample_project, "Beta")
+        alpha = _create_child(sample_project, "Alpha")
+        archived_root = project_service.create(name="Lain", color="#222222")
+        archived_child = _create_child(archived_root, "Anak Lain")
+        project_service.set_archived(archived_root.id, True)
+
+        ordered = project_service.get_hierarchical()
+        assert [v.name for v in ordered] == ["Pekerjaan", "Alpha", "Beta"]
+        assert {v.id for v in ordered} == {sample_project.id, alpha.id, beta.id}
+        assert archived_child.id not in {v.id for v in ordered}
+
+    def test_project_choices_label_hierarkis(self, app, sample_project):
+        child = _create_child(sample_project, "Sub A")
+
+        choices = dict(project_choices())
+        assert choices[str(sample_project.id)] == "Pekerjaan"
+        assert choices[str(child.id)] == "Pekerjaan / Sub A"
+
+
+class TestProjectReadPerformance:
+    """TC-08: listing project tidak menarik task/reminder (anti N+1)."""
+
+    def test_get_all_satu_query(self, app, sample_project):
+        _create_child(sample_project, "Sub A")
+        statements: list[str] = []
+
+        def _capture(conn, cursor, statement, parameters, context, executemany):
+            statements.append(statement)
+
+        engine = db.engine
+        event.listen(engine, "before_cursor_execute", _capture)
+        try:
+            project_service.get_all()
+        finally:
+            event.remove(engine, "before_cursor_execute", _capture)
+
+        assert len(statements) == 1
