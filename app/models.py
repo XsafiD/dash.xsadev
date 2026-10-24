@@ -110,22 +110,43 @@ class User(db.Model):
 
 
 class Project(db.Model):
-    """Entity — wadah pengelompokan task."""
+    """Entity — wadah pengelompokan task (maks. 2 level: project → sub project).
+
+    Hierarki via self-reference `parent_id` (NULL = project root). Kedalaman
+    maksimal 1 level TIDAK bisa dijaga di DB (MySQL tidak mendukung CHECK
+    lintas baris) — validasi ada di ProjectService. Task tetap menempel ke
+    `tasks.project_id` apa adanya, baik ke root maupun sub project.
+    """
 
     __tablename__ = "projects"
     __table_args__ = (
         Index("idx_projects_name", "name"),
         Index("idx_projects_public_id", "public_id", unique=True),
+        Index("idx_projects_parent_id", "parent_id"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     public_id: Mapped[str] = mapped_column(String(16), unique=True, nullable=False, default=generate_public_id)
+    parent_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=True
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     color: Mapped[str] = mapped_column(String(7), default="#3B82F6", nullable=False)
     icon: Mapped[str | None] = mapped_column(String(50), nullable=True)
     archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
 
+    # Forward (selalu tampil bersama parent) → eager; reverse → default lazy.
+    parent: Mapped[Project | None] = relationship(
+        "Project", back_populates="children", remote_side=[id], lazy="joined"
+    )
+    children: Mapped[list[Project]] = relationship(
+        "Project",
+        back_populates="parent",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="Project.name",
+    )
     tasks: Mapped[list[Task]] = relationship(back_populates="project", lazy="selectin")
 
 
