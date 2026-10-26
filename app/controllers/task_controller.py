@@ -13,7 +13,7 @@ Routes (semua login_required):
   - POST     /tasks/<id>/delete     — hapus (next= kembali ke halaman asal)
   - POST     /tasks/<id>/notes      — tambah catatan timeline
   - POST     /tasks/<id>/notes/<note_id>/delete — hapus catatan timeline
-  - GET      /tasks/kanban          — board kanban 3 kolom per status
+  - GET      /tasks/kanban          — board kanban 4 kolom per status
 """
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, url_for
 
@@ -32,6 +32,7 @@ _ALLOWED_PRIORITY = {value for value, _ in PRIORITY_CHOICES}
 KANBAN_COLUMNS = [
     ("todo", "Todo"),
     ("in_progress", "Proses"),
+    ("on_hold", "Tertunda"),
     ("done", "Selesai"),
 ]
 
@@ -204,7 +205,7 @@ def delete_note(task_id: str, note_id: int):
 @task_bp.route("/kanban")
 @login_required
 def kanban():
-    """Board kanban — 3 kolom per status, task dikelompokkan di controller."""
+    """Board kanban — 4 kolom per status, task dikelompokkan di controller."""
     grouped: dict[str, list] = {key: [] for key, _ in KANBAN_COLUMNS}
     for task in task_service.get_all():
         grouped.setdefault(task.status, []).append(task)
@@ -218,7 +219,7 @@ def update_status(task_id: str):
     payload = request.get_json(silent=True) or {}
     status = payload.get("status", "")
     if status not in _ALLOWED_STATUS:
-        message = "Status harus todo, in_progress, atau done."
+        message = "Status harus todo, in_progress, on_hold, atau done."
         if _wants_json():
             return jsonify(status="error", error="invalid_status", message=message), 400
         flash(message, "error")

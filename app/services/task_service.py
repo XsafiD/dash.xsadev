@@ -278,7 +278,7 @@ class TaskService:
         if priority not in PRIORITY_VALUES:
             raise ValueError("Prioritas harus low, medium, atau high.")
         if status not in STATUS_VALUES:
-            raise ValueError("Status harus todo, in_progress, atau done.")
+            raise ValueError("Status harus todo, in_progress, on_hold, atau done.")
         if assignee is not None and len(assignee.strip()) > 255:
             raise ValueError("Penanggung jawab maksimal 255 karakter.")
 
@@ -341,7 +341,7 @@ class TaskService:
 
         Args:
             task_id: ID task.
-            status: "todo" | "in_progress" | "done".
+            status: "todo" | "in_progress" | "on_hold" | "done".
 
         Returns:
             Objek Task yang sudah di-commit.
@@ -350,7 +350,7 @@ class TaskService:
             ValueError: task tidak ditemukan atau status tidak dikenal.
         """
         if status not in STATUS_VALUES:
-            raise ValueError("Status harus todo, in_progress, atau done.")
+            raise ValueError("Status harus todo, in_progress, on_hold, atau done.")
         task = db.session.get(Task, task_id)
         if task is None:
             raise ValueError("Tugas tidak ditemukan.")

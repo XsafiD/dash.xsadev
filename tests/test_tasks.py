@@ -133,6 +133,26 @@ class TestUpdateStatusService:
         assert task.status.value == "in_progress"
         assert task.completed_at is None
 
+    def test_todo_ke_tertunda_tidak_set_completed_at(self, sample_task):
+        """Tertunda (on_hold) bukan done — completed_at tetap kosong."""
+        task = task_service.update_status(sample_task.id, "on_hold")
+        assert task.status.value == "on_hold"
+        assert task.completed_at is None
+
+    def test_done_ke_tertunda_bersih_timestamp(self, sample_task):
+        """done → on_hold: completed_at dibersihkan — invariant terarsip = selalu done."""
+        task_service.update_status(sample_task.id, "done")
+        task = task_service.update_status(sample_task.id, "on_hold")
+        assert task.status.value == "on_hold"
+        assert task.completed_at is None
+        assert task.archived_at is None
+
+    def test_tertunda_ke_done_set_completed_at(self, sample_task):
+        task = task_service.update_status(sample_task.id, "on_hold")
+        task = task_service.update_status(task.id, "done")
+        assert task.status.value == "done"
+        assert task.completed_at is not None
+
     def test_status_invalid_valueerror(self, sample_task):
         with pytest.raises(ValueError, match="Status harus"):
             task_service.update_status(sample_task.id, "batal")
@@ -194,6 +214,14 @@ class TestTaskFilters:
 
         high = task_service.get_all(filters={"priority": "high", "status": "todo"})
         assert [t.title for t in high] == ["C"]
+
+    def test_filter_status_on_hold(self, app, sample_project):
+        """Filter status=on_hold hanya menampilkan task tertunda."""
+        task_service.create(title="Tertunda A", status="on_hold", project_id=sample_project.id)
+        task_service.create(title="Biasa", project_id=sample_project.id)
+
+        views = task_service.get_all(filters={"status": "on_hold"})
+        assert [v.title for v in views] == ["Tertunda A"]
 
     def test_filter_project_dan_done_diturunkan(self, app, sample_project):
         other = project_service.create(name="Lain", color="#111111")
@@ -327,12 +355,13 @@ class TestTaskRoutes:
 class TestKanbanRoutes:
     """TC-11b: Board kanban + endpoint ubah status (drag & drop)."""
 
-    def test_kanban_render_3_kolom(self, client, login_user, sample_task):
+    def test_kanban_render_4_kolom(self, client, login_user, sample_task):
         response = client.get("/tasks/kanban")
         assert response.status_code == 200
         body = response.data.decode()
         assert 'data-kanban-column="todo"' in body
         assert 'data-kanban-column="in_progress"' in body
+        assert 'data-kanban-column="on_hold"' in body
         assert 'data-kanban-column="done"' in body
         assert "Finalisasi laporan" in body
 
@@ -346,6 +375,20 @@ class TestKanbanRoutes:
         pos_todo_col = body.find('data-kanban-column="todo"')
         pos_proses_col = body.find('data-kanban-column="in_progress"')
         assert pos_todo_col < pos_todo_card < pos_proses_col
+
+    def test_kanban_grouping_tertunda(self, client, login_user, sample_project):
+        """Task on_hold masuk kolom Tertunda, bukan Todo maupun Proses."""
+        ditahan = task_service.create(title="Ditahan", project_id=sample_project.id)
+        task_service.update_status(ditahan.id, "on_hold")
+
+        body = client.get("/tasks/kanban").data.decode()
+        pos_card = body.find(f'data-task-id="{ditahan.id}"')
+        pos_todo = body.find('data-kanban-column="todo"')
+        pos_proses = body.find('data-kanban-column="in_progress"')
+        pos_hold = body.find('data-kanban-column="on_hold"')
+        pos_done = body.find('data-kanban-column="done"')
+        assert pos_todo < pos_proses < pos_hold < pos_done  # urutan kolom
+        assert pos_hold < pos_card < pos_done  # kartu di dalam kolom Tertunda
 
     def test_status_post_xhr_json(self, client, login_user, sample_task):
         headers = {"X-Requested-With": "fetch", "Content-Type": "application/json"}
@@ -366,6 +409,18 @@ class TestKanbanRoutes:
         assert response.status_code == 400
         assert response.get_json()["status"] == "error"
         assert db.session.get(Task, sample_task.id).status.value == "todo"
+
+    def test_status_post_tertunda_xhr_json(self, client, login_user, sample_task):
+        """Drag & drop ke kolom Tertunda — endpoint menerima on_hold."""
+        headers = {"X-Requested-With": "fetch", "Content-Type": "application/json"}
+        response = client.post(
+            f"/tasks/{sample_task.public_id}/status", headers=headers, json={"status": "on_hold"}
+        )
+        assert response.status_code == 200
+        payload = response.get_json()
+        assert payload["status"] == "ok"
+        assert payload["data"]["status"] == "on_hold"
+        assert db.session.get(Task, sample_task.id).status.value == "on_hold"
 
     def test_status_post_404_json(self, client, login_user):
         headers = {"X-Requested-With": "fetch", "Content-Type": "application/json"}

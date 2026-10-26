@@ -10,7 +10,7 @@ Personal Task Management System dengan project organization, task tracking, dan 
 - **Project & Sub Project** — project berwarna 2 level (project → sub project) dengan soft-delete (archive); arsip project menyembunyikan seluruh cabang
 - **Task Wajib Project** — setiap tugas harus menempel ke project (tanpa Inbox); project hanya bisa dihapus saat tidak punya tugas
 - **Dashboard Analytics** — stats cards (total, completed, overdue), project grid, task overview
-- **Tugas Kanban** — board 3 kolom (Todo/Proses/Selesai) drag & drop SortableJS, warna kolom per status, fallback tombol pindah
+- **Tugas Kanban** — board 4 kolom (Todo/Proses/Tertunda/Selesai) drag & drop SortableJS, warna kolom per status, fallback tombol pindah
 - **Arsip** — arsipkan tugas selesai dari Kanban + arsip otomatis harian 23:59 (APScheduler, toggle di Pengaturan)
 - **Smart Filtering** — filter task by project, status, priority dengan autosubmit
 - **Task State Machine** — todo → in_progress → done dengan toggle complete
@@ -158,7 +158,7 @@ dash-xsadev/
 | GET/POST | `/tasks/<id>/edit` | Form edit task |
 | POST | `/tasks/<id>/delete` | Hapus task |
 | POST | `/tasks/<id>/complete` | Toggle completion (AJAX/PRG fallback) |
-| GET | `/tasks/kanban` | Board kanban 3 kolom drag & drop |
+| GET | `/tasks/kanban` | Board kanban 4 kolom drag & drop |
 | POST | `/tasks/<id>/status` | Ubah status (AJAX dari kanban) |
 | POST | `/tasks/<id>/archive` | Arsipkan tugas selesai |
 | GET | `/arsip` | Riwayat arsip (+ unarchive/hapus permanen) |

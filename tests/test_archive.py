@@ -31,6 +31,13 @@ class TestArchiveService:
         with pytest.raises(ValueError, match="tidak dapat diarsipkan"):
             task_service.archive(task.id)
 
+    def test_archive_dari_on_hold_valueerror(self, app, sample_project):
+        """Arsip eksklusif dari done — task tertunda tidak bisa diarsipkan."""
+        task = task_service.create(title="Ditahan", project_id=sample_project.id)
+        task_service.update_status(task.id, "on_hold")
+        with pytest.raises(ValueError, match="tidak dapat diarsipkan"):
+            task_service.archive(task.id)
+
     def test_archive_dari_done_set_archived_at(self, done_task):
         task = task_service.archive(done_task.id)
         assert task.status.value == "done"

@@ -4,14 +4,18 @@
 
   var ns = (window.DashXsadev = window.DashXsadev || {});
 
-  /* Urutan kolom — JAGA SINKRON dengan KANBAN_COLUMNS di task_controller.py */
-  var COLUMN_ORDER = ["todo", "in_progress", "done"];
-
   ns.initKanbanBoard = function () {
     var board = document.querySelector("[data-kanban-board]");
     if (!board || typeof window.Sortable === "undefined") return;
 
     var csrfInput = board.querySelector("input[name='csrf_token']");
+
+    /* Urutan kolom dibaca dari DOM — sumber tunggal = urutan render KANBAN_COLUMNS
+       di task_controller.py, tak ada konstanta JS yang perlu disinkron manual. */
+    const columnOrder = () =>
+      Array.from(board.querySelectorAll("[data-kanban-column]")).map((col) =>
+        col.getAttribute("data-kanban-column"),
+      );
 
     function columnOf(el) {
       return el.closest("[data-kanban-column]");
@@ -25,12 +29,12 @@
       var empty = column.querySelector("[data-kanban-empty]");
       if (empty) empty.hidden = cards.length > 0;
 
-      var position = COLUMN_ORDER.indexOf(column.getAttribute("data-kanban-column"));
+      var position = columnOrder().indexOf(column.getAttribute("data-kanban-column"));
       cards.forEach(function (card) {
         var prev = card.querySelector("[data-kanban-move='prev']");
         var next = card.querySelector("[data-kanban-move='next']");
         if (prev) prev.classList.toggle("hidden", position <= 0);
-        if (next) next.classList.toggle("hidden", position >= COLUMN_ORDER.length - 1);
+        if (next) next.classList.toggle("hidden", position >= columnOrder().length - 1);
       });
     }
 
@@ -103,21 +107,22 @@
         var card = button.closest("[data-kanban-card]");
         if (!card || card.classList.contains("is-loading")) return;
 
-        var position = COLUMN_ORDER.indexOf(
+        var order = columnOrder();
+        var position = order.indexOf(
           columnOf(card).getAttribute("data-kanban-column")
         );
         var target = position + (button.getAttribute("data-kanban-move") === "next" ? 1 : -1);
-        if (target < 0 || target >= COLUMN_ORDER.length) return;
+        if (target < 0 || target >= order.length) return;
 
         var fromList = card.parentElement;
         var targetList = board.querySelector(
-          '[data-kanban-column="' + COLUMN_ORDER[target] + '"] [data-kanban-cards]'
+          '[data-kanban-column="' + order[target] + '"] [data-kanban-cards]'
         );
         if (!targetList) return;
 
         targetList.appendChild(card);
         refreshBoard();
-        save(card, COLUMN_ORDER[target], function revert() {
+        save(card, order[target], function revert() {
           fromList.appendChild(card);
           refreshBoard();
         });

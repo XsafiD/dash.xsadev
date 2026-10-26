@@ -12,9 +12,14 @@
       label: "Todo",
     },
     in_progress: {
-      cls: "bg-info/10 text-info-ink",
+      cls: "bg-warning/15 text-warning-ink",
       icon: "fa-solid fa-spinner",
       label: "Sedang Dikerjakan",
+    },
+    on_hold: {
+      cls: "bg-info/10 text-info-ink",
+      icon: "fa-solid fa-pause",
+      label: "Tertunda",
     },
     done: {
       cls: "bg-success/10 text-success-ink",

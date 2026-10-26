@@ -21,7 +21,7 @@ window.UI_KIT_THEME = {
     expense: "#DC2626",
     success: { DEFAULT: "#16A34A", ink: "#15803D", soft: "rgba(22, 163, 74, 0.10)" },
     danger: "#DC2626",
-    info: { DEFAULT: "#0EA5E9", ink: "#0369A1" },
+    info: { DEFAULT: "#0EA5E9", ink: "#0369A1", soft: "rgba(14, 165, 233, 0.10)" },
 
     // ── Token lama project (dipertahankan) ──
     warning: { DEFAULT: "#F59E0B", ink: "#92400E", soft: "rgba(245, 158, 11, 0.10)" },

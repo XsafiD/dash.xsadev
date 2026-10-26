@@ -22,7 +22,7 @@
 <section class="mt-6" data-kanban-board aria-label="Papan kanban tugas">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  {# Identitas warna per kolom — Todo abu soft, Proses kuning soft, Selesai hijau #}
+  {# Identitas warna per kolom — Todo abu soft, Proses kuning soft, Tertunda biru soft, Selesai hijau #}
   {% set column_style = {
     "todo": {
       "board": "border-hairline bg-hairline/40",
@@ -36,6 +36,12 @@
       "dot": "bg-warning",
       "count": "text-warning-ink",
     },
+    "on_hold": {
+      "board": "border-info/25 bg-info-soft",
+      "header": "border-info/20",
+      "dot": "bg-info",
+      "count": "text-info-ink",
+    },
     "done": {
       "board": "border-success/25 bg-success-soft",
       "header": "border-success/20",
@@ -44,7 +50,7 @@
     },
   } %}
 
-  <div class="grid gap-4 md:grid-cols-3">
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     {% for key, label in columns %}
     {% set style = column_style[key] %}
     <div data-kanban-column="{{ key }}"

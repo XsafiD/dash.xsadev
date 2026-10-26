@@ -3,7 +3,8 @@
 {% macro status_badge(status) -%}
   {%- set map = {
     "todo":         {"cls": "border border-hairline bg-surface-soft text-slate", "icon": "fa-regular fa-circle", "label": "Todo"},
-    "in_progress":  {"cls": "bg-info/10 text-info-ink", "icon": "fa-solid fa-spinner", "label": "Sedang Dikerjakan"},
+    "in_progress":  {"cls": "bg-warning/15 text-warning-ink", "icon": "fa-solid fa-spinner", "label": "Sedang Dikerjakan"},
+    "on_hold":      {"cls": "bg-info/10 text-info-ink", "icon": "fa-solid fa-pause", "label": "Tertunda"},
     "done":         {"cls": "bg-success/10 text-success-ink", "icon": "fa-solid fa-circle-check", "label": "Selesai"},
   } -%}
   {%- set m = map.get(status, map["todo"]) -%}

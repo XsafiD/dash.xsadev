@@ -197,11 +197,12 @@ The system runs predominantly flat. Elevation is reserved for two interaction la
 - Medium: `{colors.warning}` background, `{colors.ink}` text.
 - High: `{colors.critical}` background, white text.
 
-**`badge-status`** — Status chip (Todo, In Progress, Done).
-- Todo: `{colors.stone}` background.
-- In Progress: `{colors.info}` background.
-- Done: `{colors.success}` background.
-- All: white text, typography `{typography.body-sm}`, rounded `{rounded.full}`, padding `4px 10px`.
+**`badge-status`** — Status chip (Todo, In Progress, Tertunda, Done).
+- Todo: `{colors.surface-soft}` background + border `{colors.hairline}`, text `{colors.slate}`.
+- In Progress: `{colors.warning}` 15% alpha background, `{colors.warning-ink}` text.
+- Tertunda (on hold): `{colors.info}` 10% alpha background, `{colors.info-ink}` text — tugas sengaja ditahan, terpisah dari Todo.
+- Done: `{colors.success}` 10% alpha background, `{colors.success-ink}` text.
+- All: typography `{typography.body-sm}`, rounded `{rounded.full}`, padding `4px 10px`; warna chip = warna kolom kanban senada.
 
 **`badge-deadline`** — Deadline indicator.
 - Upcoming: `{colors.info}` background.
@@ -266,10 +267,10 @@ The system runs predominantly flat. Elevation is reserved for two interaction la
 - List: `task-item` stack.
 - Bottom: Pagination.
 
-**`kanban-board`** — Board 3 kolom per status (Todo, Proses, Selesai) — drag & drop untuk ubah status.
-- Grid 3 kolom desktop (`{spacing.md}` gap), stack 1 kolom mobile.
-- Kolom: rounded `{rounded.lg}`, border `1px solid` senada + tint background per status — Todo abu soft (`{colors.hairline}` 40% alpha), Proses `{colors.warning-soft}`, Selesai `{colors.success-soft}`.
-- Header: dot aksen 8px + label `{typography.subtitle-md}` + counter pill (`{colors.surface}` bg; teks `{colors.slate}` / `{colors.warning-ink}` / `{colors.success-ink}` per kolom), divider warna senada kolom.
+**`kanban-board`** — Board 4 kolom per status (Todo, Proses, Tertunda, Selesai) — drag & drop untuk ubah status.
+- Grid responsive: stack 1 kolom mobile, 2 kolom `md`, 4 kolom `xl` (`{spacing.md}` gap).
+- Kolom: rounded `{rounded.lg}`, border `1px solid` senada + tint background per status — Todo abu soft (`{colors.hairline}` 40% alpha), Proses `{colors.warning-soft}`, Tertunda `{colors.info-soft}` (tugas ditahan/belum actionable), Selesai `{colors.success-soft}`.
+- Header: dot aksen 8px + label `{typography.subtitle-md}` + counter pill (`{colors.surface}` bg; teks `{colors.slate}` / `{colors.warning-ink}` / `{colors.info-ink}` / `{colors.success-ink}` per kolom), divider warna senada kolom.
 - Saat drag aktif: board dapat class `is-dragging` → area kartu tiap kolom diberi outline 1px dashed sebagai cue drop target.
 - Kartu di-drop ke kolom lain → POST status via AJAX → toast; gagal → revert posisi.
 - Reorder dalam kolom sama tidak dipersist (tanpa field urutan).

@@ -6,7 +6,12 @@ from wtforms.validators import DataRequired, Length, Optional
 from app.services.note_service import NOTE_MAX_LENGTH
 
 PRIORITY_CHOICES = [("low", "Rendah"), ("medium", "Sedang"), ("high", "Tinggi")]
-STATUS_CHOICES = [("todo", "Todo"), ("in_progress", "Sedang Dikerjakan"), ("done", "Selesai")]
+STATUS_CHOICES = [
+    ("todo", "Todo"),
+    ("in_progress", "Sedang Dikerjakan"),
+    ("on_hold", "Tertunda"),
+    ("done", "Selesai"),
+]
 
 
 def project_choices() -> list[tuple[str, str]]:
